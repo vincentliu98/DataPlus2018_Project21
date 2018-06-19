@@ -55,13 +55,21 @@ ui <-
       sidebarMenu(
         menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
         menuItem("Widgets", tabName = "widgets", icon = icon("th"), 
-                 badgeLabel = "new", badgeColor = "green")
+                 badgeLabel = "new", badgeColor = "green"),
+        menuItem("About Us", tabName = "about", icon = icon("address-card"))
       )
     ),
     dashboardBody(
       tabItems(
         tabItem(tabName = "dashboard",
-                h2("Dashboard")
+                h2("Dashboard"),
+                h3("Complete User Profile"),
+                textInput("netid", label = h4("Net ID"), placeholder = "Ex. abc123"),
+                selectInput("major", label = h4("Major(s)"),
+                            choices = list("AMES" = "ames",
+                                           "VMS" = "vms"),
+                            multiple = TRUE),
+                textInput("year", label = h4("Graduation Year"), placeholder = "Ex. 2020")
         ),
         tabItem(tabName = "widgets",
                 h2("Widgets"),
@@ -103,14 +111,20 @@ ui <-
                                            "Wiring With Women" = 34,
                                            "Women in Computing" = 35),
                             multiple = TRUE),
-                
                 # Include clarifying text ----
                 helpText("Note: Select all the co-curricular programs you have participated 
-                         at Duke from the drop-down menu.")
-                )
-        ),
-        DT::dataTableOutput("table")
+                         at Duke from the drop-down menu."),
+                DT::dataTableOutput("table")
+                ),
+        tabItem(tabName = "about",
+                h2("About Us"),
+                p("We are a Data+ Project."),
+                
+                h3("Contact Information"),
+                p("Paul Bendich")
+        )
       )
+    )
   )
 
 
@@ -118,7 +132,8 @@ server <- function(input, output) {
   output$user_programs <- renderPrint({ input$programs })
 
   output$table <- DT::renderDataTable({
-    # Load Data from Excel (in csv format)
+    #ContentBasedRec.R
+        # Load Data from Excel (in csv format)
     programs_tags <- read_csv("/Users/brookekeene/Documents/Duke University/Data+/Project_21/Tag_Words.csv")
     
     # Create and Label a Document Term Matrix
