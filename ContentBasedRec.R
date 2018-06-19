@@ -68,3 +68,4 @@ for(i in 1:N) {
   #hist(stud_predictions)
   #qqnorm(stud_predictions)
   #qqline(stud_predictions)
+
