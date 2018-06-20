@@ -1,5 +1,4 @@
-# DataPlus2018_Project21
-##  Co-Curricular Pathways (E-Advisor)
+# DataPlus2018_Project21: Co-Curricular Pathways (E-Advisor)
 
 ## Creation of R Shiny App
 app.R --> main R script that simply creates and runs the shiny app
