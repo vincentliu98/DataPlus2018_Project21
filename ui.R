@@ -44,13 +44,14 @@ ui <-
                     )
     ),
     dashboardSidebar(
+      sidebarSearchForm(textId = "searchOrgs", buttonId = "searchButton", 
+                        label = "Search..."),
       sidebarMenuOutput("menu"),
       sidebarMenu(
         menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-        menuItem("Bookmarks", tabName = "bookmarks", icon= icon("bookmark")),
+        menuItem("Favorites", tabName = "favorites", icon= icon("star")),
         menuItem("Widgets", tabName = "widgets", icon = icon("th"), 
                  badgeLabel = "new", badgeColor = "green"),
-        menuItem("Search All", tabName = "all", icon = icon("search")),
         menuItem("About Us", tabName = "about", icon = icon("address-card"))
       )
     ),
@@ -75,15 +76,15 @@ ui <-
                                          choices = list("Bass Connections" = 1,
                                                         "Blueprint" = 2),
                                          multiple = TRUE),
-                             selectInput("yr1prog", label = h4("Programs - Year 2"),
+                             selectInput("yr2prog", label = h4("Programs - Year 2"),
                                          choices = list("Bass Connections" = 1,
                                                         "Blueprint" = 2),
                                          multiple = TRUE),
-                             selectInput("yr1prog", label = h4("Programs - Year 3"),
+                             selectInput("yr3prog", label = h4("Programs - Year 3"),
                                          choices = list("Bass Connections" = 1,
                                                         "Blueprint" = 2),
                                          multiple = TRUE),
-                             selectInput("yr1prog", label = h4("Programs - Year 4"),
+                             selectInput("yr4prog", label = h4("Programs - Year 4"),
                                          choices = list("Bass Connections" = 1,
                                                         "Blueprint" = 2),
                                          multiple = TRUE)
@@ -106,8 +107,8 @@ ui <-
                   )
                 )
         ),
-        tabItem(tabName = "bookmarks",
-                h2("Bookmarks")),
+        tabItem(tabName = "favorites",
+                h2("Favorites")),
         tabItem(tabName = "widgets",
                 h2("Widgets"),
                 # Create Content-Based Recommender Widget
@@ -167,8 +168,6 @@ ui <-
                                 multiple = TRUE)
                 )
       ),
-      tabItem(tabName = "all",
-              h2("Search")),
       tabItem(tabName = "about",
               h2("About Us"),
               p("This website began as a Duke Data+ Project to address the need for a platform

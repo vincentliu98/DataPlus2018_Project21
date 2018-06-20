@@ -14,6 +14,9 @@ library(tm)
 
 server <- function(input, output) {
   output$user_programs <- renderPrint({ input$programs })
+  # input$searchButton
+  # input$searchText
+  
   
   output$table <- DT::renderDataTable({
     #ContentBasedRec.R
