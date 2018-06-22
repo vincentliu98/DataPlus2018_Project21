@@ -11,4 +11,6 @@ server.R --> server R script that handles back end data management of Shiny app
 ## Recommendation System
 ContentBasedRec.R --> our initial content-based recommender
 
+CollaborativeRec.R --> our initial collaborative filtering recommender
+
 RecSim.R --> R script to run and test our recommendation system
