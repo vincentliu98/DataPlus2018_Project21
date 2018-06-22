@@ -59,8 +59,12 @@ ui <-
       tabItems(
         tabItem(tabName = "dashboard",                   
                 h2("Dashboard"),
+                #fluidRow(
+                #  h3("Welcome!")
+                #),
                 fluidRow(
                   # User Profile Box
+                  # Include follow up questions about Bass Connections, Data+ etc.?
                   box(title = "User Profile", status = "primary", width = 12,
                       solidHeader = TRUE, collapsible = TRUE,
                       column(width = 4,
@@ -90,22 +94,23 @@ ui <-
                                          multiple = TRUE)
                       )
                   )
-                ),
-                fluidRow(
+                )#,
+                #fluidRow(
                   # Info Boxes - can use InputBoxOutput
-                  infoBox(title = "Co-Curriculars", 
-                          value = 60, 
-                          icon = icon("list-alt"),
-                          color = "light-blue",
-                          width = 4
-                  ),
-                  infoBox(title = "Approval Rating", 
-                          value = 100, 
-                          icon = icon("thumbs-up"),
-                          color = "green",
-                          width = 4
-                  )
-                )
+                  #infoBox(title = "Co-Curriculars", 
+                  #        value = 60, 
+                  #        subtitle = "We represent 60 different co-curricular activities at Duke",
+                  #        icon = icon("list-alt"),
+                  #        color = "light-blue",
+                  #        width = 4
+                  #),
+                  #infoBox(title = "Approval Rating", 
+                  #        value = 100, 
+                  #        icon = icon("thumbs-up"),
+                  #        color = "green",
+                  #        width = 4
+                  #)
+                #)
         ),
         tabItem(tabName = "favorites",
                 h2("Favorites")),
@@ -170,11 +175,8 @@ ui <-
       ),
       tabItem(tabName = "about",
               h2("About Us"),
-              p("This website began as a Duke Data+ Project to address the need for a platform
-                which would help Duke students to navigate the co-curricular environment at Duke 
-                university. We hope to use student and organization data to map links between
-                students and determine the best possible recommendation algorithm for this purpose."),
-              
+              p("
+                "),
               h3("Contact Information"),
               p("Director: Paul Bendich"),
               p("Project Team Manager: Lindsay Berry"),
