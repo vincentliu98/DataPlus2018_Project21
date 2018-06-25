@@ -5,32 +5,45 @@
 #install.packages("DT")
 #install.packages("tidyverse")
 #install.packages("tm")
+#install.packages("googlesheets")
 
 library(shiny)
 library(shinydashboard)
 library(DT)
 library(tidyverse)
 library(tm)
+library(googlesheets)
+
+# Load Data from Google Sheets
+# List of Tags
+gs_tags <- gs_title("Tag_Words")
+programs_tags <- gs_read_csv(gs_tags, col_names = TRUE)
 
 server <- function(input, output) {
-  output$user_programs <- renderPrint({ input$programs })
-  # input$searchButton
-  # input$searchText
+  # Save User Profile\
+  gs_eadvisor <- gs_title("E-Advisor Database")
+  observeEvent(
+    input$submit,
+    gs_add_row(gs_eadvisor, 
+               input = c(input$netid, input$major, input$year, 
+                         input$yr1prog, input$yr2prog, input$yr3prog, input$yr4prog))
+  )
   
+  observe({
+    print(input$netid)
+    print(input$major)
+    print(input$year)
+  })
   
   output$table <- DT::renderDataTable({
-    #ContentBasedRec.R
-    # Load Data from Excel (in csv format)
-    programs_tags <- read_csv("/Users/brookekeene/Documents/Duke University/Data+/Project_21/Tag_Words.csv")
+    # ContentBasedRec.R
+    # Load data from Google Sheet
+    gs_tags <- gs_title("DukeGroups_Tech")
+    programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
     
-    # Create and Label a Document Term Matrix
-    
-    corpus <- Corpus(VectorSource(programs_tags$`Tag Words`))
-    programs_df <- as.matrix(DocumentTermMatrix(corpus))
-    
-    program_names = programs_tags[c(1)]            # Column of Program Names
-    row.names(programs_df) <- apply(program_names, MARGIN = 1, FUN = paste0)
-    
+    program_names = programs_df[c(1)]              # Column of Program Names
+    programs_df <- programs_df[,-1]
+    print(str(programs_df))
     # Determine DF and IDF vectors
     DF = colSums(programs_df)                      # Document Frequency 
     total_tags = rowSums(programs_df)              # Total number of tags for a program
