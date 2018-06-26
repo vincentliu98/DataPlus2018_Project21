@@ -1,6 +1,7 @@
 # server.R --> server file for Shiny App
 
 #install.packages("shiny")
+#install.packages("shinyjs")
 #install.packages("shinydashboard")
 #install.packages("DT")
 #install.packages("tidyverse")
@@ -8,6 +9,7 @@
 #install.packages("googlesheets")
 
 library(shiny)
+library(shinyjs)
 library(shinydashboard)
 library(DT)
 library(tidyverse)
@@ -20,20 +22,40 @@ gs_tags <- gs_title("Tag_Words")
 programs_tags <- gs_read_csv(gs_tags, col_names = TRUE)
 
 server <- function(input, output) {
-  # Save User Profile\
+  # Save User Profile
   gs_eadvisor <- gs_title("E-Advisor Database")
   observeEvent(
     input$submit,
+    {
+    # Pre-process variables with multiple entries
+    majs <- paste(input$major, collapse = ", ")
+    yr1 <- paste(input$yr1prog, collapse = ", ")
+    yr2 <- paste(input$yr2prog, collapse = ", ")
+    yr3 <- paste(input$yr3prog, collapse = ", ")
+    yr4 <- paste(input$yr4prog, collapse = ", ")
+    
+    # Add row to google sheet
     gs_add_row(gs_eadvisor, 
-               input = c(input$netid, input$major, input$year, 
-                         input$yr1prog, input$yr2prog, input$yr3prog, input$yr4prog))
+               input = c(input$netid, majs, input$year, yr1, yr2, yr3, yr4))
+    
+    # Clear input cells
+    reset("netid")
+    reset("major")
+    reset("year")
+    reset("yr1prog")
+    reset("yr2prog")
+    reset("yr3prog")
+    reset("yr4prog")
+    }
   )
   
-  observe({
-    print(input$netid)
-    print(input$major)
-    print(input$year)
-  })
+  #observeEvent(
+  #  input$submit,
+  #  {
+  #    session$sendCustomMessage(type = 'testmessage',
+  #                              message = 'Thank you for submitting your profile')
+  #  }
+  #)
   
   output$table <- DT::renderDataTable({
     # ContentBasedRec.R
@@ -44,6 +66,7 @@ server <- function(input, output) {
     program_names = programs_df[c(1)]              # Column of Program Names
     programs_df <- programs_df[,-1]
     print(str(programs_df))
+    
     # Determine DF and IDF vectors
     DF = colSums(programs_df)                      # Document Frequency 
     total_tags = rowSums(programs_df)              # Total number of tags for a program

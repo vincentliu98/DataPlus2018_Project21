@@ -1,10 +1,13 @@
 # ui.R --> ui file for Shiny App
 
 #install.packages("shiny")
+#install.packages("shinyjs")
 #install.packages("shinydashboard")
 #install.packages("DT")
+
 library(tidyverse)
 library(shiny)
+library(shinyjs)
 library(shinydashboard)
 library(DT)
 library(googlesheets)
@@ -19,7 +22,7 @@ names(maj_choice) <- maj_list$Majors
 # List of activities
 gs_prog <- gs_title("DukeGroups_Tech")
 prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
-prog_choice <- as.list(c(1:nrow(prog_list)))
+prog_choice <- as.list(c(1:nrow(prog_list)+1))
 names(prog_choice) <- prog_list$CoCurriculars
 
 header <-  
@@ -80,31 +83,35 @@ body <-
               h3("Welcome!"),
               fluidRow(
                 # User Profile Box
+                # Add help text!
                 # Include follow up questions about Bass Connections, Data+ etc.?
-                box(title = "User Profile", status = "primary", width = 12,
-                    solidHeader = TRUE, collapsible = TRUE,
-                    column(width = 4,
-                           textInput("netid", label = h4("Net ID"), placeholder = "Ex. abc123"),
-                           selectInput("major", label = h4("Major(s)"),
-                                       choices = maj_choice,
-                                       multiple = TRUE),
-                           textInput("year", label = h4("Graduation Year"), placeholder = "Ex. 2020")
-                    ),
-                    column(width = 8,
-                           selectInput("yr1prog", label = h4("Programs - Year 1"),
-                                       choices = prog_choice,
-                                       multiple = TRUE),
-                           selectInput("yr2prog", label = h4("Programs - Year 2"),
-                                       choices = prog_choice,
-                                       multiple = TRUE),
-                           selectInput("yr3prog", label = h4("Programs - Year 3"),
-                                       choices = prog_choice,
-                                       multiple = TRUE),
-                           selectInput("yr4prog", label = h4("Programs - Year 4"),
-                                       choices = prog_choice,
-                                       multiple = TRUE)
-                    ),
-                    actionButton("submit", "Submit")
+                useShinyjs(),
+                div(
+                  box(title = "User Profile", status = "primary", width = 12,
+                      solidHeader = TRUE, collapsible = TRUE,
+                      column(width = 4,
+                             textInput("netid", label = h4("Net ID"), placeholder = "Ex. abc123"),
+                             selectInput("major", label = h4("Major(s)"),
+                                         choices = maj_choice,
+                                         multiple = TRUE),
+                             textInput("year", label = h4("Admit Year"), placeholder = "Ex. 2016, if Class of 2020")
+                      ),
+                      column(width = 8,
+                             selectInput("yr1prog", label = h4("Programs - Year 1"),
+                                         choices = prog_choice,
+                                         multiple = TRUE),
+                             selectInput("yr2prog", label = h4("Programs - Year 2"),
+                                         choices = prog_choice,
+                                         multiple = TRUE),
+                             selectInput("yr3prog", label = h4("Programs - Year 3"),
+                                         choices = prog_choice,
+                                         multiple = TRUE),
+                             selectInput("yr4prog", label = h4("Programs - Year 4"),
+                                         choices = prog_choice,
+                                         multiple = TRUE)
+                      ),
+                      actionButton("submit", "Submit")
+                  )
                 )
               )
               #fluidRow(
