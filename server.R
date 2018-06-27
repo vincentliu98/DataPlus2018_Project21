@@ -49,6 +49,7 @@ server <- function(input, output) {
     }
   )
   
+  # Send User a Message?
   #observeEvent(
   #  input$submit,
   #  {
@@ -64,22 +65,24 @@ server <- function(input, output) {
     programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
     
     program_names = programs_df[c(1)]              # Column of Program Names
-    programs_df <- programs_df[,-1]
-    print(str(programs_df))
+    program_names <- program_names[-1,]
+    programs_df <- programs_df[-1,-1]              # Remove column of program names
     
     # Determine DF and IDF vectors
     DF = colSums(programs_df)                      # Document Frequency 
     total_tags = rowSums(programs_df)              # Total number of tags for a program
-    N = nrow(program_names)                        # Total number of documents
+    N = NROW(program_names)                        # Total number of documents
     IDF = log10(N/DF)                              # Inverse Document Frequency
     
     # Create a data frame for a student's participation using their input
     students_df = data.frame(matrix(0,N,1))
-    row.names(students_df) <- apply(program_names, MARGIN = 1, FUN = paste0)
+    row.names(students_df) <- program_names
     student_progs <- input$programs
     for(i in student_progs) {
-      i = strtoi(i)
-      students_df[i,1] = 1
+      if(i != 2) {
+        i = strtoi(i)
+        students_df[i-2,1] = 1
+      }
     }
     
     # Normalize Data
@@ -96,7 +99,7 @@ server <- function(input, output) {
     
     # Create matrix of student predictions based on weighted scores
     stud_predictions = matrix(NA, nrow = nrow(programs_df), ncol = ncol(students_df))
-    row.names(stud_predictions) <- apply(program_names, MARGIN = 1, FUN = paste0)
+    row.names(stud_predictions) <- program_names
     for(c in 1:ncol(students_df)) {
       for(r in 1:nrow(programs_df)) {
         stud_predictions[r,c] = sum(stud_profiles[c,]*weighted_scores[r,])
@@ -109,7 +112,7 @@ server <- function(input, output) {
         stud_predictions[i] = -1 # change to -1
       }
     }
-    #stud_predictions = stud_predictions[-which(stud_predictions %in% -1)]
+
     DT::datatable(stud_predictions)
   })
 }
