@@ -89,6 +89,8 @@ body <-
                 div(
                   box(title = "User Profile", status = "primary", width = 12,
                       solidHeader = TRUE, collapsible = TRUE,
+                      # Include clarifying text
+                      helpText("Note: Please enter your information into all fields."),
                       column(width = 4,
                              textInput("netid", label = h4("Net ID"), placeholder = "Ex. abc123"),
                              selectInput("major", label = h4("Major(s)"),
@@ -139,12 +141,12 @@ body <-
               box(title = "Recommender", status = "primary",
                   solidHeader = TRUE, width = 12, collapsible = TRUE, 
                   column(width = 4,
-                         selectInput("programs", label = h3("Co-Curricular Activities"), 
-                                     choices = prog_choice,
-                                     multiple = TRUE),
-                         # Include clarifying text ----
-                         helpText("Note: Select all the co-curricular programs you have participated 
-                                  at Duke from the drop-down menu.")
+                         # Include clarifying text
+                         helpText("If you have already completed your user profile, you are ready
+                                  to receive recommendations! Please enter your Duke NetID 
+                                  below which you used to create your profile."),
+                         textInput("recID", label = h3("Enter your NetID"), placeholder = "Ex. abc123"),
+                         actionButton("recGo", "Recommend!")
                   ),
                   column(width = 8,
                          DT::dataTableOutput("table")
