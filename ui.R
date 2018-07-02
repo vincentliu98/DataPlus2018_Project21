@@ -160,7 +160,7 @@ body <-
                                   below which you used to create your profile."),
                          textInput("recID", label = h3("Enter your NetID"), placeholder = "Ex. abc123"),
                          actionButton("recGo", "Recommend!")
-                  ),
+                         ),
                   column(width = 8,
                          widgetUserBox(
                            title = "Organization",
@@ -190,7 +190,7 @@ body <-
                          )
                          #DT::dataTableOutput("table")
                   )
-              ),
+                  ),
               # Create a Search with Filters Widget
               box(title = "Search All", status = "primary",
                   solidHeader = TRUE, width = 12, collapsible = TRUE,
@@ -215,14 +215,14 @@ body <-
                 this data, we plan to improve the current recommendation system running
                 behind this initial version of our 'e-advisor.'"),
               p("Thank you for helping us with this task! 
-              If you have any questions, please feel free to contact us."),
+                If you have any questions, please feel free to contact us."),
               h3("Contact Information"),
               p("Director: Paul Bendich"),
               p("Project Team Manager: Lindsay Berry"),
               p("Project Team Members: Alec Ashforth, Brooke Keene, Vincent Liu, Dezmanique Martin")
+              )
       )
     )
-  )
 
 ui <- dashboardPage(header, sidebar, body)
 

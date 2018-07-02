@@ -20,9 +20,9 @@ IDF = log10(N/DF)                              # Inverse Document Frequency
 
 # Create a data frame of a student and their participation
 students_df = data.frame(Student1 = rbinom(N, 1, 0.01))
-  # To randomly generate student activities us either of the 2 below:
-    # Create empty matrix: matrix(0,N,1))
-    # Student1 = sample(c(0,1), size = N, replace = TRUE)) OR rbinom(N, 1, 0.5))
+# To randomly generate student activities us either of the 2 below:
+# Create empty matrix: matrix(0,N,1))
+# Student1 = sample(c(0,1), size = N, replace = TRUE)) OR rbinom(N, 1, 0.5))
 row.names(students_df) <- program_names
 
 # Normalize Data
@@ -56,7 +56,6 @@ for(i in 1:N) {
 
 
 # Analyze Data
-  #hist(stud_predictions)
-  #qqnorm(stud_predictions)
-  #qqline(stud_predictions)
-
+#hist(stud_predictions)
+#qqnorm(stud_predictions)
+#qqline(stud_predictions)

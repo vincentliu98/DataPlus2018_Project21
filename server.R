@@ -27,35 +27,35 @@ server <- function(input, output, session) {
   observeEvent(
     input$submit,
     {
-    # Check if user filled all fields
-    if(is.null(input$netid)||is_empty(input$major)||is.null(input$year)
-       ||is_empty(input$yr1prog)||is_empty(input$yr2prog)||is_empty(input$yr3prog)||is_empty(input$yr4prog)) {
-      session$sendCustomMessage("check", "Please fill out your information for all fields!")
-      return()
-    }
+      # Check if user filled all fields
+      if(is.null(input$netid)||is_empty(input$major)||is.null(input$year)
+         ||is_empty(input$yr1prog)||is_empty(input$yr2prog)||is_empty(input$yr3prog)||is_empty(input$yr4prog)) {
+        session$sendCustomMessage("check", "Please fill out your information for all fields!")
+        return()
+      }
       
-    # Pre-process variables with multiple entries
-    majs <- paste(input$major, collapse = ", ")
-    yr1 <- paste(input$yr1prog, collapse = ", ")
-    yr2 <- paste(input$yr2prog, collapse = ", ")
-    yr3 <- paste(input$yr3prog, collapse = ", ")
-    yr4 <- paste(input$yr4prog, collapse = ", ")
-    
-    # Add row to google sheet
-    gs_add_row(gs_eadvisor, 
-               input = c(input$netid, majs, input$year, yr1, yr2, yr3, yr4))
-    
-    # Clear input cells
-    reset("netid")
-    reset("major")
-    reset("year")
-    reset("yr1prog")
-    reset("yr2prog")
-    reset("yr3prog")
-    reset("yr4prog")
-    
-    # Send user a message
-    session$sendCustomMessage("thanks", "Thank you for submitting your profile!")
+      # Pre-process variables with multiple entries
+      majs <- paste(input$major, collapse = ", ")
+      yr1 <- paste(input$yr1prog, collapse = ", ")
+      yr2 <- paste(input$yr2prog, collapse = ", ")
+      yr3 <- paste(input$yr3prog, collapse = ", ")
+      yr4 <- paste(input$yr4prog, collapse = ", ")
+      
+      # Add row to google sheet
+      gs_add_row(gs_eadvisor, 
+                 input = c(input$netid, majs, input$year, yr1, yr2, yr3, yr4))
+      
+      # Clear input cells
+      reset("netid")
+      reset("major")
+      reset("year")
+      reset("yr1prog")
+      reset("yr2prog")
+      reset("yr3prog")
+      reset("yr4prog")
+      
+      # Send user a message
+      session$sendCustomMessage("thanks", "Thank you for submitting your profile!")
     }
   )
   
@@ -162,3 +162,12 @@ server <- function(input, output, session) {
 }
 
 shinyServer(server)
+
+# app.R
+# app.R --> Shiny App
+
+library(shiny)
+source('ui.R')
+source('server.R')
+
+shinyApp(ui = ui, server = server)

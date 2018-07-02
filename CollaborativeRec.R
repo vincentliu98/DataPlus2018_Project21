@@ -13,8 +13,8 @@ getCosine <- function(x,y)
 pathways <- read_csv("/Users/brookekeene/Documents/Duke University/Data+/pathways.csv")
 
 # Create and Label a Document Term Matrix
-  # Documents = Student IDs
-  # Terms = Programs
+# Documents = Student IDs
+# Terms = Programs
 corpus <- Corpus(VectorSource(pathways$`programs`))
 ids_programs <- as.data.frame(as.matrix(DocumentTermMatrix(corpus)))
 
@@ -23,7 +23,7 @@ row.names(ids_programs) <- apply(stud_ids, MARGIN = 1, FUN = paste0)
 
 # Create a Placeholder Item vs. Item Data Frame
 ids_programs.similarity  <- as.data.frame(matrix(NA, nrow=ncol(ids_programs),ncol=ncol(ids_programs),
-                                   dimnames=list(colnames(ids_programs),colnames(ids_programs))))
+                                                 dimnames=list(colnames(ids_programs),colnames(ids_programs))))
 
 # Fill data frame with cosine similarities
 for(i in 1:ncol(ids_programs)) {
@@ -45,6 +45,3 @@ for(i in 1:ncol(ids_programs))
 }
 
 ids_programs.neighbours
-
-
-
