@@ -1,14 +1,20 @@
 # ui.R --> ui file for Shiny App
 
+#install.packages("tidyverse")
+#install.packages("tm")
 #install.packages("shiny")
 #install.packages("shinyjs")
 #install.packages("shinydashboard")
+#install.packages("shinydashboardPlus")
 #install.packages("DT")
+#install.packages("googlesheets")
 
 library(tidyverse)
+library(tm)
 library(shiny)
 library(shinyjs)
 library(shinydashboard)
+library(shinydashboardPlus)
 library(DT)
 library(googlesheets)
 
@@ -20,10 +26,14 @@ maj_choice <- as.list(maj_list$Abbreviations)
 names(maj_choice) <- maj_list$Majors
 
 # List of activities
-gs_prog <- gs_title("DukeGroups_Tech")
+gs_prog <- gs_title("Co-Curriculars")
 prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
-prog_choice <- as.list(c(1:nrow(prog_list)+1))
+prog_choice <- as.list(prog_list$Code)
 names(prog_choice) <- prog_list$CoCurriculars
+
+# Pop-up Messages
+js_thanks <- 'Shiny.addCustomMessageHandler("thanks", function(message) {alert(message);});'
+js_check <- 'Shiny.addCustomMessageHandler("check", function(message) {alert(message);});'
 
 header <-  
   dashboardHeader(
@@ -85,12 +95,15 @@ body <-
                 # User Profile Box
                 # Add help text!
                 # Include follow up questions about Bass Connections, Data+ etc.?
+                tags$head(tags$script(HTML(js_thanks))),
+                tags$head(tags$script(HTML(js_check))),
                 useShinyjs(),
                 div(
                   box(title = "User Profile", status = "primary", width = 12,
                       solidHeader = TRUE, collapsible = TRUE,
                       # Include clarifying text
                       helpText("Note: Please enter your information into all fields."),
+                      textOutput("check"),
                       column(width = 4,
                              textInput("netid", label = h4("Net ID"), placeholder = "Ex. abc123"),
                              selectInput("major", label = h4("Major(s)"),
@@ -149,16 +162,42 @@ body <-
                          actionButton("recGo", "Recommend!")
                   ),
                   column(width = 8,
-                         DT::dataTableOutput("table")
+                         widgetUserBox(
+                           title = "Organization",
+                           type = 2,
+                           #src = "", for photo
+                           color = "primary",
+                           width = 12,
+                           "Description!",
+                           footer = "Contact Info"
+                         ),
+                         #br(),
+                         widgetUserBox(
+                           title = "Organization",
+                           type = 2,
+                           color = "primary",
+                           width = 12,
+                           "Description!",
+                           footer = "Contact Info"
+                         ),
+                         widgetUserBox(
+                           title = "Organization",
+                           type = 2,
+                           color = "primary",
+                           width = 12,
+                           "Description!",
+                           footer = "Contact Info"
+                         )
+                         #DT::dataTableOutput("table")
                   )
+              ),
+              # Create a Search with Filters Widget
+              box(title = "Search All", status = "primary",
+                  solidHeader = TRUE, width = 12, collapsible = TRUE,
+                  selectInput("filters", label = h3("Filters"),
+                              choices = list("Art" = "a"),
+                              multiple = TRUE)
               )
-              # Create a Filtering Widget
-              #box(title = "Interests", status = "primary",
-              #    solidHeader = TRUE, width = 12, collapsible = TRUE,
-              #    selectInput("interests", label = h3("Interests"),
-              #                choices = list("Art" = "a"),
-              #                multiple = TRUE)
-              #)
       ),
       tabItem(tabName = "about",
               h2("About Us"),
