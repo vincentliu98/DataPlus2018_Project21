@@ -16,11 +16,6 @@ library(tidyverse)
 library(tm)
 library(googlesheets)
 
-# Load Data from Google Sheets
-# List of Tags --> potentially used for an interests based recommender
-#gs_tags <- gs_title("Tag_Words")
-#programs_tags <- gs_read_csv(gs_tags, col_names = TRUE)
-
 server <- function(input, output, session) {
   # Save User Profile
   gs_eadvisor <- gs_title("E-Advisor Database")
@@ -95,7 +90,7 @@ server <- function(input, output, session) {
       gs_prog <- gs_title("Co-Curriculars")
       prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
       
-      gs_tags <- gs_title("DukeGroups_Tech")
+      gs_tags <- gs_title("DukeGroups_Edited")
       programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
       
       program_names = programs_df[c(1)]              # Column of Program Names
@@ -162,12 +157,3 @@ server <- function(input, output, session) {
 }
 
 shinyServer(server)
-
-# app.R
-# app.R --> Shiny App
-
-library(shiny)
-source('ui.R')
-source('server.R')
-
-shinyApp(ui = ui, server = server)

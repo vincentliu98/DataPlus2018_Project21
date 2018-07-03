@@ -162,33 +162,7 @@ body <-
                          actionButton("recGo", "Recommend!")
                          ),
                   column(width = 8,
-                         widgetUserBox(
-                           title = "Organization",
-                           type = 2,
-                           #src = "", for photo
-                           color = "primary",
-                           width = 12,
-                           "Description!",
-                           footer = "Contact Info"
-                         ),
-                         #br(),
-                         widgetUserBox(
-                           title = "Organization",
-                           type = 2,
-                           color = "primary",
-                           width = 12,
-                           "Description!",
-                           footer = "Contact Info"
-                         ),
-                         widgetUserBox(
-                           title = "Organization",
-                           type = 2,
-                           color = "primary",
-                           width = 12,
-                           "Description!",
-                           footer = "Contact Info"
-                         )
-                         #DT::dataTableOutput("table")
+                         DT::dataTableOutput("table")
                   )
                   ),
               # Create a Search with Filters Widget
