@@ -176,7 +176,7 @@ body <-
       tabItem(tabName = "about",
               h2("About Us"),
               p("We are a team of Duke undergraduate students currently working on a 
-                Data+ project in collaboration with Duke's Office of Informational 
+                Data+ project in collaboration with Duke's Office of Information 
                 Technology (O.I.T.). Duke University is an exciting and ever-changing 
                 institution, but as Duke's massive co-curricular environment grows it 
                 can become more difficult for undergraduates to navigate this 

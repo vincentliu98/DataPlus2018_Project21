@@ -4,7 +4,7 @@ library(tm)
 library(googlesheets)
 
 # Load Data from Excel (in csv format)
-gs_tags <- gs_title("DukeGroups_Tech")
+gs_tags <- gs_title("DukeGroups_Edited")
 programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
 
 #programs_df <- data.frame(read_csv("/Users/brookekeene/Documents/Duke University/Data+/Project_21/DukeGroupData.csv"))
