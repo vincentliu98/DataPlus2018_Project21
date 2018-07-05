@@ -150,8 +150,13 @@ body <-
               h2("Favorites")),
       tabItem(tabName = "widgets",
               h2("Widgets"),
-              # Create Content-Based Recommender Widget
-              box(title = "Recommender", status = "primary",
+              p("Discover new Duke co-curricular activities with the widgets below! 
+                If you have already completed your user profile, you are able to use
+                our Co-Curricular Recommender. If you have participated in only one
+                or two co-curricular activities here at Duke, we would recommend that
+                you begin by using the Find Similar Co-Curriculars Widget."),
+              # Content-Based Recommender Widget
+              box(title = "Co-Curricular Recommender", status = "primary",
                   solidHeader = TRUE, width = 12, collapsible = TRUE, 
                   column(width = 4,
                          # Include clarifying text
@@ -162,15 +167,24 @@ body <-
                          actionButton("recGo", "Recommend!")
                          ),
                   column(width = 8,
-                         DT::dataTableOutput("table")
-                  )
+                         tableOutput("table")
                   ),
-              # Create a Search with Filters Widget
-              box(title = "Search All", status = "primary",
+                  collapsed = TRUE
+              ),
+              # Jaccard Similarity Recommender Widget --> change variable names?
+              box(title = "Find Similar Co-Curriculars", status = "primary",
                   solidHeader = TRUE, width = 12, collapsible = TRUE,
-                  selectInput("filters", label = h3("Filters"),
-                              choices = list("Art" = "a"),
-                              multiple = TRUE)
+                  column(width = 4,
+                         helpText("Enter the co-curricular program for which you would like to
+                                  see similar activities."),
+                         selectInput("recProg", label = h3("Enter a Program"),
+                                     choices = prog_choice),
+                         actionButton("recGo2", "Recommend!")
+                         ),
+                  column(width = 8,
+                         tableOutput("table2")
+                  ),
+                  collapsed = TRUE
               )
       ),
       tabItem(tabName = "about",
