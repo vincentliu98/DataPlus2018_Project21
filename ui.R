@@ -1,14 +1,8 @@
 # ui.R --> ui file for Shiny App
 
-#install.packages("tidyverse")
-#install.packages("tm")
-#install.packages("shiny")
-#install.packages("shinyjs")
-#install.packages("shinydashboard")
-#install.packages("shinydashboardPlus")
-#install.packages("DT")
-#install.packages("googlesheets")
+#install.packages --> ?
 
+library(rsconnect)
 library(tidyverse)
 library(tm)
 library(shiny)

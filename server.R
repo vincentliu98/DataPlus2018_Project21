@@ -1,13 +1,8 @@
 # server.R --> server file for Shiny App
 
-#install.packages("shiny")
-#install.packages("shinyjs")
-#install.packages("shinydashboard")
-#install.packages("DT")
-#install.packages("tidyverse")
-#install.packages("tm")
-#install.packages("googlesheets")
+#install.packages --> ?
 
+library(rsconnect)
 library(shiny)
 library(shinyjs)
 library(shinydashboard)

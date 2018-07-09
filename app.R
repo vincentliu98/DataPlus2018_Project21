@@ -1,6 +1,7 @@
 # app.R --> Shiny App
 
 library(shiny)
+library(rsconnect)
 
 source('ui.R')
 source('server.R')
