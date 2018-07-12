@@ -5,9 +5,9 @@ account: brookezkeene
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 375532
-bundleId: 1471734
+bundleId: 1471905
 url: https://brookezkeene.shinyapps.io/DataPlus2018_Project21/
-when: 1531150963.88775
+when: 1531157354.36029
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .httr-oauth|.RData|CollaborativeRec.R|ContentBasedRec.R|JaccardRec.R|README.md|RecSim.R
+ignoredFiles: .RData|CollaborativeRec.R|ContentBasedRec.R|JaccardRec.R|README.md|RecSim.R

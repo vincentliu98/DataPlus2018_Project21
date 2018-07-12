@@ -16,4 +16,8 @@ ContentBasedRec.R --> our initial content-based recommender
 
 CollaborativeRec.R --> our initial collaborative filtering recommender
 
+JaccardRec.R --> our initial testing with Jaccard similarity
+  - can be used to find similar programs or students
+  - may use to improve collaborative or content based filtering
+
 RecSim.R --> R script to run and test our recommendation system
