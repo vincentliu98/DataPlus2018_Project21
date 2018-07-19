@@ -7,10 +7,12 @@ library(googlesheets)
 gs_tags <- gs_title("DukeGroups_Edited")
 programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
 
-#programs_df <- data.frame(read_csv("/Users/brookekeene/Documents/Duke University/Data+/Project_21/DukeGroupData.csv"))
 program_names = programs_df[c(1)]              # Column of Program Names
 program_names <- program_names[-1,]
 programs_df <- programs_df[-1,-1]              # Remove column of program names
+#### FOR TESTING REMOVE ROWS
+programs_df <- programs_df[-c(144:158),]
+program_names <- program_names[-c(144:158)]
 
 # Determine DF and IDF vectors
 DF = colSums(programs_df)                      # Document Frequency 

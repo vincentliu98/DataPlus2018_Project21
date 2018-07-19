@@ -28,6 +28,7 @@ names(prog_choice) <- prog_list$CoCurriculars
 # Pop-up Messages
 js_thanks <- 'Shiny.addCustomMessageHandler("thanks", function(message) {alert(message);});'
 js_check <- 'Shiny.addCustomMessageHandler("check", function(message) {alert(message);});'
+js_record <- 'Shiny.addCustomMessageHandler("noRecord", function(message) {alert(message);});'
 
 header <-  
   dashboardHeader(
@@ -150,20 +151,24 @@ body <-
                 or two co-curricular activities here at Duke, we would recommend that
                 you begin by using the Find Similar Co-Curriculars Widget."),
               # Content-Based Recommender Widget
-              box(title = "Co-Curricular Recommender", status = "primary",
-                  solidHeader = TRUE, width = 12, collapsible = TRUE, 
-                  column(width = 4,
-                         # Include clarifying text
-                         helpText("If you have already completed your user profile, you are ready
-                                  to receive recommendations! Please enter your Duke NetID 
-                                  below which you used to create your profile."),
-                         textInput("recID", label = h3("Enter your NetID"), placeholder = "Ex. abc123"),
-                         actionButton("recGo", "Recommend!")
-                         ),
-                  column(width = 8,
-                         tableOutput("table")
-                  ),
-                  collapsed = TRUE
+              tags$head(tags$script(HTML(js_record))),
+              useShinyjs(),
+              div(
+                box(title = "Co-Curricular Recommender", status = "primary",
+                    solidHeader = TRUE, width = 12, collapsible = TRUE, 
+                    column(width = 4,
+                           # Include clarifying text
+                           helpText("If you have already completed your user profile, you are ready
+                                    to receive recommendations! Please enter your Duke NetID 
+                                    below which you used to create your profile."),
+                           textInput("recID", label = h3("Enter your NetID"), placeholder = "Ex. abc123"),
+                           actionButton("recGo", "Recommend!")
+                           ),
+                    column(width = 8,
+                           tableOutput("table")
+                    ),
+                    collapsed = TRUE
+                )
               ),
               # Jaccard Similarity Recommender Widget --> change variable names?
               box(title = "Find Similar Co-Curriculars", status = "primary",

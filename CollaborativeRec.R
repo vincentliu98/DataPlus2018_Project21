@@ -71,7 +71,7 @@ for(i in 1:num_studs) {
     
     # filter out programs student has already participated in by storing an empty string
     if(as.integer(ids_programs[ids_programs$student == stud,prog]) == 1) {
-      holder[i,j] <- ""
+      holder[i,j] <- -1
     }
     else {
       # get program's top N neighbors sorted by similarity
@@ -99,4 +99,35 @@ for(i in 1:nrow(ids_programs.scores)) {
 
 # Final Result of User vs. User
 ids_programs.scores.ordered
+
+# Find specific scores associated with netID provided
+stud_scores <- ids_programs.scores[(which(rownames(ids_programs.scores) %in% 'bzk2')),]
+stud_scores <- as.data.frame(stud_scores)
+
+# Convert program codes to indexes
+gs_prog <- gs_title("Co-Curriculars")
+prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
+
+gs_tags <- gs_title("DukeGroups_Edited")
+programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
+
+program_names = programs_df[c(1)]              # Column of Program Names
+program_names <- program_names[-1,]
+programs_df <- programs_df[-1,-1]              # Remove column of program names
+#### FOR TESTING REMOVE ROWS
+programs_df <- programs_df[-c(144:158),]
+program_names <- program_names[-c(144:158)]
+
+stud_preds = as.data.frame(matrix(0, nrow = nrow(programs_df), ncol = 1))
+rownames(stud_preds) <- program_names
+
+for(i in 1:nrow(stud_scores)) {
+  prog_code <- rownames(stud_scores)[i]
+  index <- which(prog_list$Code %in% strtoi(prog_code))
+  prog_name <- prog_list$CoCurriculars[index]
+  new_index <- which(program_names %in% prog_name)
+
+  stud_preds[new_index,1] <- stud_scores[i,1]
+}
+  
 
