@@ -14,13 +14,13 @@ library(googlesheets)
 
 # Load Data from Google Sheets
 # List of majors
-gs_maj <- gs_title("Majors")
+gs_maj <- gs_url("https://docs.google.com/spreadsheets/d/1LqaHYZixDr4aMYq64wojMF5AYDVOsD83IWlX-ayDc0c/")
 maj_list <- gs_read_csv(gs_maj, col_names = TRUE)
 maj_choice <- as.list(maj_list$Abbreviations)
 names(maj_choice) <- maj_list$Majors
 
 # List of activities
-gs_prog <- gs_title("Co-Curriculars")
+gs_prog <- gs_url("https://docs.google.com/spreadsheets/d/1HkqN1ISgHevSjYQw5XJlkAMQao61GMktFl9CO4PqMJY/")
 prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
 prog_choice <- as.list(prog_list$Code)
 names(prog_choice) <- prog_list$CoCurriculars
@@ -86,10 +86,21 @@ body <-
       tabItem(tabName = "dashboard",                   
               h2("Dashboard"),
               h3("Welcome!"),
+              p("Are you an undergraduate student at Duke University looking for ways to expand 
+                your various areas of knowledge? Would you like to discover new opportunities or 
+                resources available to you? Or are you simply curious what options exist for a 
+                student like you? Well we have the solution for you!"),
+              p("We have compiled a list of over 150 different co-curricular programs and organizations,
+                but we are hoping to eventually expand our platform to include all Duke activities. With
+                the information we have gathered regarding these different organizations, we have deveoloped
+                various algorithms that will recommend certain co-curricular programs based on a student's
+                interests and previous participation. Feel free to explore our website and test out our
+                widgets."),
+              p("If you would like to help us improve our system, please fill out the User Profile
+                below or add your organization to our database. If you would like to learn more about our 
+                project or provide feedback, please visit the \"About Us\" tab"),
               fluidRow(
                 # User Profile Box
-                # Add help text!
-                # Include follow up questions about Bass Connections, Data+ etc.?
                 tags$head(tags$script(HTML(js_thanks))),
                 tags$head(tags$script(HTML(js_check))),
                 useShinyjs(),
@@ -97,14 +108,16 @@ body <-
                   box(title = "User Profile", status = "primary", width = 12,
                       solidHeader = TRUE, collapsible = TRUE,
                       # Include clarifying text
-                      helpText("Note: Please enter your information into all fields."),
+                      helpText("Please enter your information into all of the following fields."),
                       textOutput("check"),
                       column(width = 4,
                              textInput("netid", label = h4("Net ID"), placeholder = "Ex. abc123"),
                              selectInput("major", label = h4("Major(s)"),
                                          choices = maj_choice,
                                          multiple = TRUE),
-                             textInput("year", label = h4("Admit Year"), placeholder = "Ex. 2016, if Class of 2020")
+                             helpText("*Please select up to 3 majors. If you are unsure, simply select \"Undeclared\"."),
+                             textInput("year", label = h4("Admit Year"), placeholder = "Ex. 2016, if Class of 2020"),
+                             helpText("*Please type the year in which you matriculated at Duke.")
                       ),
                       column(width = 8,
                              selectInput("yr1prog", label = h4("Programs - Year 1"),
@@ -118,7 +131,11 @@ body <-
                                          multiple = TRUE),
                              selectInput("yr4prog", label = h4("Programs - Year 4"),
                                          choices = prog_choice,
-                                         multiple = TRUE)
+                                         multiple = TRUE),
+                             helpText("*Please select the programs that you have participated in during each year 
+                                      you have been at Duke. Summer programs are counted under the academic year
+                                      you finished directly prior to the program. If you have not completed a specific
+                                      year yet, please select \"NA\".")
                       ),
                       actionButton("submit", "Submit")
                   )
@@ -150,6 +167,10 @@ body <-
                 our Co-Curricular Recommender. If you have participated in only one
                 or two co-curricular activities here at Duke, we would recommend that
                 you begin by using the Find Similar Co-Curriculars Widget."),
+              # If you are a new student or have not participated in any co-curriculars
+              # at Duke, we have created an Interests widget that can help guide you to
+              # activities that align with your preferences. 
+              
               # Content-Based Recommender Widget
               tags$head(tags$script(HTML(js_record))),
               useShinyjs(),
@@ -188,12 +209,12 @@ body <-
       ),
       tabItem(tabName = "about",
               h2("About Us"),
-              p("We are a team of Duke undergraduate students currently working on a 
-                Data+ project in collaboration with Duke's Office of Information 
-                Technology (O.I.T.). Duke University is an exciting and ever-changing 
-                institution, but as Duke's massive co-curricular environment grows it 
-                can become more difficult for undergraduates to navigate this 
-                complicated academic and extracurricular landscape. Therefore, our 
+              p("We are a team of Duke undergraduate students currently working on a", 
+                a("Data+", href = "https://bigdata.duke.edu/data"), "project in collaboration 
+                with Duke's Office of Information Technology (O.I.T.). Duke University is an 
+                exciting and ever-changing institution, but as Duke's massive co-curricular 
+                environment grows it can become more difficult for undergraduates to navigate 
+                this complicated academic and extracurricular landscape. Therefore, our 
                 goal is to create an 'e-advisor' tool that will help students determine
                 which co-curricular activities are well-suited for their interests. In
                 order to accomplish this, we hope to gather data that will allow us to
@@ -202,14 +223,16 @@ body <-
                 this data, we plan to improve the current recommendation system running
                 behind this initial version of our 'e-advisor.'"),
               p("Thank you for helping us with this task! 
-                If you have any questions, please feel free to contact us."),
+                If you have any questions, please visit our ", 
+                a("website", href = "https://bigdata.duke.edu/projects/co-curricular-technology-pathways-e-advisor"), 
+                " or feel free to contact us ."),
               h3("Contact Information"),
-              p("Director: Paul Bendich"),
+              p("Data+ Director: Paul Bendich"),
               p("Project Team Manager: Lindsay Berry"),
               p("Project Team Members: Alec Ashforth, Brooke Keene, Vincent Liu, Dezmanique Martin")
-              )
       )
     )
+  )
 
 ui <- dashboardPage(header, sidebar, body)
 

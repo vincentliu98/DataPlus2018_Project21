@@ -1,6 +1,7 @@
 # Model of a Collaborative Filtering Recommendation Algorithm
 library(tidyverse)
 library(tm)
+library(googlesheets)
 
 # Function to Calculate Cosine Similarity -- Item vs. Item
 getCosine <- function(x,y) 
@@ -16,13 +17,40 @@ getScore <- function(history, similarities)
   x
 }
 
-# Load Data from csv File
-pathways <- read_csv("/Users/brookekeene/Documents/Duke University/Data+/ShinyPathways.csv")
+# Load Data from Googlesheets
+gs_eadvisor <- gs_title("E-Advisor Database")
+id_data <- gs_read_csv(gs_eadvisor, col_names = TRUE)
+pathways <- as.data.frame(matrix(NA, nrow = nrow(id_data), ncol = 2))
+colnames(pathways) <- c('netID', 'programs')
+for(i in 1:nrow(id_data)) {
+  pathways[i,1] <- id_data[i,1]
+  
+  id_progs <- id_data[i,]
+  id_progs <- id_progs[-c(1,2,3)]
+  
+  temp_progs <- c()
+  for(c in id_progs) {
+    if(is.integer(c) && c != 1000 && !(c %in% temp_progs)) {
+      temp_progs <- append(temp_progs, c)
+    }
+    else {
+      temp_list <- as.numeric(unlist(strsplit(as.character(c), ", ")))
+      for(j in temp_list) {
+        if(j != 1000 && !(j %in% temp_progs)) {
+          temp_progs <- append(temp_progs, j)
+        }
+      }
+    }
+  }
+  
+  pathways[i,2] <- paste(temp_progs, collapse = ", ")
+  
+}
 
 # Create and Label a Document Term Matrix
   # Documents = Student IDs
   # Terms = Programs
-corpus <- Corpus(VectorSource(pathways$`programs`))
+corpus <- Corpus(VectorSource(pathways$programs))
 ids_programs <- as.data.frame(as.matrix(DocumentTermMatrix(corpus)))
 
 stud_ids = pathways[c(1)]           # Column of Student Net IDs
@@ -60,7 +88,7 @@ ids_programs.neighbours
 # User vs. User Collaborative Filtering
 
 # Create a placeholder user vs. user matrix
-holder <- matrix(NA, nrow = num_studs, ncol = num_progs, dimnames = list((stud_ids$student),colnames(ids_programs[,1:num_progs])))
+holder <- matrix(NA, nrow = num_studs, ncol = num_progs, dimnames = list((stud_ids$netID),colnames(ids_programs[,1:num_progs])))
 
 # Loop through students (rows) and programs (cols)
 for(i in 1:num_studs) {
@@ -114,9 +142,6 @@ programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
 program_names = programs_df[c(1)]              # Column of Program Names
 program_names <- program_names[-1,]
 programs_df <- programs_df[-1,-1]              # Remove column of program names
-#### FOR TESTING REMOVE ROWS
-programs_df <- programs_df[-c(144:158),]
-program_names <- program_names[-c(144:158)]
 
 stud_preds = as.data.frame(matrix(0, nrow = nrow(programs_df), ncol = 1))
 rownames(stud_preds) <- program_names

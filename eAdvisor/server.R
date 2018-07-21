@@ -1,28 +1,29 @@
-# server.R --> server file for Shiny App
-
-#install.packages --> ?
-
-library(rsconnect)
 library(shiny)
 library(shinyjs)
-library(shinydashboard)
-library(DT)
+library(googlesheets)
 library(tidyverse)
 library(tm)
-library(googlesheets)
+library(DT)
 
-# Content-Based Filtering
+# Load Data from Googlesheets
+# E-Advisor Database
+gs_eadvisor <- gs_key("1lnZaPj22rIo0WYfKNAWerEpRDuh4ByI9tZSVbtMT4iw")
+id_data <- gs_read_csv(gs_eadvisor, col_names = TRUE)
+# Co-Curriculars
+gs_prog <- gs_key("1HkqN1ISgHevSjYQw5XJlkAMQao61GMktFl9CO4PqMJY")
+prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
+# DukeGroups_Edited
+gs_tags <- gs_key("1Zs8ELNUlX5A1pYOkyrJ38nvK2ZSl_vuh7DAdWhnQ30k")
+programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
+
+
+## Content-Based Filtering
 content_filter <- function(netID, progress)
 {
-  ## Access a Student's Co-Curriculars with their NetID
+  # Access a Student's Co-Curriculars with their NetID
   # Find row of given netID
-  gs_eadvisor <- gs_title("E-Advisor Database")
-  id_data <- gs_read_csv(gs_eadvisor, col_names = TRUE)
-  
-  progress$inc(0.1) # Increment progress bar
-  
-  ids = id_data[c(1)]
-  id_row = which(ids==netID, arr.ind = TRUE)
+  ids <- id_data[c(1)]
+  id_row <- which(ids==netID, arr.ind = TRUE)
   if(length(id_row) == 0) {
     return()
   }
@@ -50,21 +51,13 @@ content_filter <- function(netID, progress)
     }
   }
   
+  progress$inc(0.1)                              # Progress Bar - 10%
+  
   # Match codes to actual co-curricular names
-  gs_prog <- gs_title("Co-Curriculars")
-  prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
-  
-  progress$inc(0.1) # Increment progress bar
-  
-  gs_tags <- gs_title("DukeGroups_Edited")
-  programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
-  
-  progress$inc(0.1) # Increment progress bar
-  
-  program_names = programs_df[c(1)]             # Column of Program Names
+  program_names = programs_df[c(1)]              # Column of Program Names
   program_names <- program_names[-1,]
-  programs_df <- programs_df[-1,-1]             # Remove column of program names
-  
+  new_programs_df <- programs_df[-1,-1]          # Remove NA row & program names
+
   progs <- c()
   for(i in rec_progs) {
     index <- which(prog_list$Code %in% i)
@@ -72,15 +65,15 @@ content_filter <- function(netID, progress)
     new_index <- which(program_names %in% temp_name)
     progs <- append(progs, new_index)
   }
-  rec_progs <- progs                            # Vector of programs with appropriate indexes
+  rec_progs <- progs                             # Vector of programs with appropriate indexes
   
   ## ContentBasedRec.R
   # Determine DF and IDF vectors
-  DF = colSums(programs_df)                     # Document Frequency 
-  total_tags = rowSums(programs_df)             # Total number of tags for a program
-  N = NROW(program_names)                       # Total number of documents
-  IDF = log10(N/DF)                             # Inverse Document Frequency
-  
+  DF = colSums(new_programs_df)                  # Document Frequency 
+  total_tags = rowSums(new_programs_df)          # Total number of tags for a program
+  N = NROW(program_names)                        # Total number of documents
+  IDF = log10(N/DF)                              # Inverse Document Frequency
+
   # Create a data frame for a student's participation using their input
   students_df = data.frame(matrix(0,N,1))
   rownames(students_df) <- program_names
@@ -88,28 +81,32 @@ content_filter <- function(netID, progress)
   for(i in student_progs) {
     students_df[i,1] = 1
   }
+
+  progress$inc(0.1)                              # Progress Bar - 20%
   
   # Normalize data
-  norm_prog = sweep(programs_df, 1, sqrt(total_tags), "/")
-  
+  norm_prog <- sweep(new_programs_df, 1, sqrt(total_tags), "/")
+
   # Create matrix of student profiles
   stud_profiles = matrix(NA, nrow = ncol(students_df), ncol = ncol(norm_prog))
   for(i in 1:ncol(students_df)) {
     stud_profiles[i,] = apply(norm_prog, 2, function(x){t(x)%*%students_df[,i]})
   }
-  
+
   # Create matrix of weighted scores of tags for each program
   weighted_scores = t(apply(norm_prog, 1, function(x){x*IDF}))
   
   # Create matrix of student predictions based on weighted scores
-  stud_predictions = matrix(NA, nrow = nrow(programs_df), ncol = ncol(students_df))
+  stud_predictions = matrix(NA, nrow = nrow(new_programs_df), ncol = ncol(students_df))
   rownames(stud_predictions) <- program_names
   for(c in 1:ncol(students_df)) {
-    for(r in 1:nrow(programs_df)) {
+    for(r in 1:nrow(new_programs_df)) {
       stud_predictions[r,c] = sum(stud_profiles[c,]*weighted_scores[r,])
     }
   }
   
+  progress$inc(0.1)                              # Progress Bar - 30%
+
   # Change scores to ranks and delete programs already participated in
   participated <- c()
   for(i in 1:N) {
@@ -122,7 +119,7 @@ content_filter <- function(netID, progress)
   rownames(stud_predictions) <- program_names
   
   stud_predictions <- as.data.frame(stud_predictions[-participated,, drop = FALSE])
-  
+
   return(stud_predictions)
 }
 
@@ -144,9 +141,7 @@ collaborative_filter <- function(netID, progress)
   }
   
   ## CollaborativeRec.R
-  # Load Data from Googlesheets
-  gs_eadvisor <- gs_title("E-Advisor Database")
-  id_data <- gs_read_csv(gs_eadvisor, col_names = TRUE)
+  # Create pathways data frame to store netIDs and list of programs
   pathways <- as.data.frame(matrix(NA, nrow = nrow(id_data), ncol = 2))
   colnames(pathways) <- c('netID', 'programs')
   for(i in 1:nrow(id_data)) {
@@ -174,15 +169,16 @@ collaborative_filter <- function(netID, progress)
     
   }
   
+  progress$inc(0.1)                              # Progress Bar - 50%
+  
   # Create and label a document term matrix
-  # Documents = Student IDs
-  # Terms = Programs
+    # Documents = Student IDs
+    # Terms = Programs
   corpus <- Corpus(VectorSource(pathways$`programs`))
   ids_programs <- as.data.frame(as.matrix(DocumentTermMatrix(corpus)))
   
-  stud_ids = pathways[c(1)]                     # Column of Student Net IDs
+  stud_ids = pathways[c(1)]                      # Column of Student Net IDs
   ids_programs$student <- stud_ids
-  #row.names(ids_programs) <- apply(stud_ids, MARGIN = 1, FUN = paste0)
   num_studs <- nrow(ids_programs)
   num_progs <- ncol(ids_programs)-1
   
@@ -199,7 +195,7 @@ collaborative_filter <- function(netID, progress)
   }
   ids_programs.similarity <- as.data.frame(ids_programs.similarity)
   
-  progress$inc(0.1) # Increment progress bar
+  progress$inc(0.1)                              # Progress Bar - 60%
   
   ## User vs. User Collaborative Filtering
   # Create a placeholder user vs. user matrix
@@ -207,6 +203,10 @@ collaborative_filter <- function(netID, progress)
   
   # Loop through students (rows) and programs (cols)
   for(i in 1:num_studs) {
+    if(i == num_studs/2) {
+      progress$inc(0.1)                              # Progress Bar - 70%
+    }
+    
     for(j in 1:num_progs) {
       # get student's and program's name
       stud <- rownames(holder)[i]
@@ -234,26 +234,18 @@ collaborative_filter <- function(netID, progress)
   }
   ids_programs.scores <- holder
   
-  progress$inc(0.1) # Increment progress bar
+  progress$inc(0.1)                              # Progress Bar - 80%
   
   # Find specific scores associated with netID provided
   stud_scores <- ids_programs.scores[(which(rownames(ids_programs.scores) %in% netID)),]
   stud_scores <- as.data.frame(stud_scores)
   
   # Convert program codes to indexes
-  gs_prog <- gs_title("Co-Curriculars")
-  prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
-  
-  progress$inc(0.1) # Increment progress bar
-  
-  gs_tags <- gs_title("DukeGroups_Edited")
-  programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
-  
   program_names = programs_df[c(1)]              # Column of Program Names
   program_names <- program_names[-1,]
-  programs_df <- programs_df[-1,-1]              # Remove column of program names
+  new_programs_df <- programs_df[-1,-1]          # Remove column of program names
   
-  stud_predictions = as.data.frame(matrix(0, nrow = nrow(programs_df), ncol = 1))
+  stud_predictions = as.data.frame(matrix(0, nrow = nrow(new_programs_df), ncol = 1))
   rownames(stud_predictions) <- program_names
   
   for(i in 1:nrow(stud_scores)) {
@@ -278,15 +270,12 @@ collaborative_filter <- function(netID, progress)
   
   stud_predictions <- as.data.frame(stud_predictions[-participated,, drop = FALSE])
   
-  progress$inc(0.1) # Increment progress bar
-  Sys.sleep(0.25)
-  
   return(stud_predictions)
 }
 
 server <- function(input, output, session) {
   # Save User Profile
-  gs_eadvisor <- gs_title("E-Advisor Database")
+  gs_eadvisor <- gs_key("1lnZaPj22rIo0WYfKNAWerEpRDuh4ByI9tZSVbtMT4iw")
   observeEvent(
     input$submit,
     {
@@ -303,7 +292,7 @@ server <- function(input, output, session) {
         return()
       }
       
-      prof_progress$inc(0.25)
+      prof_progress$inc(0.25)                    # Progress Bar - 25%
       Sys.sleep(0.1)
       
       # Pre-process variables with multiple entries
@@ -313,14 +302,14 @@ server <- function(input, output, session) {
       yr3 <- paste(input$yr3prog, collapse = ", ")
       yr4 <- paste(input$yr4prog, collapse = ", ")
       
-      prof_progress$inc(0.25)
+      prof_progress$inc(0.25)                    # Progress Bar - 50%
       Sys.sleep(0.1)
       
       # Add row to google sheet
       gs_add_row(gs_eadvisor, 
                  input = c(input$netid, majs, input$year, yr1, yr2, yr3, yr4))
       
-      prof_progress$inc(0.25)
+      prof_progress$inc(0.25)                    # Progress Bar - 75%
       Sys.sleep(0.1)
       
       # Clear input cells
@@ -332,7 +321,7 @@ server <- function(input, output, session) {
       reset("yr3prog")
       reset("yr4prog")
       
-      prof_progress$inc(0.25)
+      prof_progress$inc(0.25)                    # Progress Bar - 100%
       Sys.sleep(0.1)
       
       # Send user a message
@@ -340,17 +329,17 @@ server <- function(input, output, session) {
     }
   )
   
-  # Recommender Widget - Hybrid Recommender 
-    # Combination of ContentBasedRec.R and CollaborativeRec.R
+  ## Widget - Co-Curricular Recommender
+  # Hybrid Recommender - Combination of ContentBasedRec.R and CollaborativeRec.R
   observeEvent(
     input$recGo,
     {
-      # Progress Bar
+      # Progress bar
       rec_progress <- shiny::Progress$new()
       on.exit(rec_progress$close())
       
       rec_progress$set(message = "Loading Recommendations...", value = 0)
-        
+      
       # Run Functions and Store Prediction Data
       netID = input$recID
       
@@ -362,10 +351,11 @@ server <- function(input, output, session) {
         return()
       }
       
-      rec_progress$inc(0.1) # Increment progress bar
-      Sys.sleep(0.25)
+      rec_progress$inc(0.1)                      # Progress Bar - 40%
       
       collaborative_scores <- collaborative_filter(netID, rec_progress)
+      
+      rec_progress$inc(0.1)                      # Progress Bar - 90%
       
       final_scores <- as.data.frame(matrix(NA, nrow = nrow(content_scores), ncol = 2, dimnames = list(rownames(content_scores),c('Score','Description'))))
       
@@ -376,18 +366,13 @@ server <- function(input, output, session) {
         final_scores[i,1] <- (content_scores[i,1]*content_percentage) + (collaborative_scores[i,1]*collaborative_percentage)
       }
       
-      rec_progress$inc(0.1) # Increment progress bar
-      Sys.sleep(0.25)
-      
-      # Organize Final Scores
+      # Organize final scores
       final_scores <- final_scores[order(final_scores[,'Score'], decreasing = TRUE),]
       final_scores <- head(final_scores, n = 10)  # display only top 10 programs
       
       final_rows <- rownames(final_scores)
       
-      # Get Descriptions
-      gs_prog <- gs_title("Co-Curriculars")
-      prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
+      # Get descriptions
       
       for(i in 1:nrow(final_scores)){
         prog_name <- rownames(final_scores)[i]
@@ -395,81 +380,75 @@ server <- function(input, output, session) {
         final_scores[i,2] <- prog_list[index,3]
       }
       
-      rec_progress$inc(0.1) # Increment progress bar
-      Sys.sleep(0.25)
-      
       final_scores <- as.data.frame(final_scores[,-1])
       row.names(final_scores) <- final_rows
       
-      # Render Output Table
+      rec_progress$inc(0.1)                      # Progress Bar - 100%
+      
+      # Render output table
       output$table <- renderTable(final_scores,
                                   rownames = TRUE,
                                   colnames = FALSE)
     }
   )
   
-  # Recommendation Widget - Similar Program Recommender
-    # Jaccard similarity calculated using code from JaccardRec.R
+  ## Widget - Find Similar Programs
+  # Jaccard similarity calculated with JaccardRec.R
   observeEvent(
     input$recGo2,
     {
-      # Progress Bar
+      # Progress bar
       rec2_progress <- shiny::Progress$new()
       on.exit(rec2_progress$close())
       
       rec2_progress$set(message = "Loading Recommendations...", value = 0)
       
-      # Match code to actual co-curricular names --> EDIT
-      gs_prog <- gs_title("Co-Curriculars")
-      prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
-      
-      rec2_progress$inc(0.25) # Increment progress bar
-      
-      gs_tags <- gs_title("DukeGroups_Edited")
-      programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
-      
-      rec2_progress$inc(0.25) # Increment progress bar
-      
-      program_names = programs_df[c(1)]         # Column of Program Names
+      # Match program code to actual co-curricular name
+      program_names = programs_df[c(1)]          # Column of Program Names
       program_names <- program_names[-1,]
-      programs_df <- programs_df[-1,-1]         # Remove column of program names
-      prog_num <- nrow(programs_df)             # Number of total programs
-      tag_num <- ncol(programs_df)              # Number of total tags
+      new_programs_df <- programs_df[-1,-1]      # Remove column of program names
+      prog_num <- nrow(new_programs_df)          # Number of total programs
+      tag_num <- ncol(new_programs_df)           # Number of total tags
       
+      # Find index of input program
       index <- which(prog_list$Code %in% strtoi(input$recProg))
       name <- prog_list$CoCurriculars[index]
       prog_index <- which(program_names %in% name)
       
-      # JaccardRec.R
+      ## JaccardRec.R
       # Jaccard Function
       jaccard <- function(x, y) {
         inter_cardinality <- length(intersect(x, y))
         union_cardinality <- length(union(x, y))
         return(inter_cardinality/union_cardinality)
       }
-        
-      # Change 1s to a New Number, Unique to Tag
+      
+      # Change 1s to a new number, unique to tag
       for(r in 1:prog_num) {
         for(c in 1:tag_num) {
-          if(programs_df[r,c] == 1) {
-            programs_df[r,c] <- c               # Sets column number as unique tag number
+          if(new_programs_df[r,c] == 1) {
+            new_programs_df[r,c] <- c            # Sets column number as unique tag number
           }
         }
       }
       
-      # Create New List of Vectors Containing Programs' Unique Tag Numbers
+      rec2_progress$inc(0.25)                    # Progress Bar - 25%
+      
+      # Create new list of vectors containing programs' unique tag numbers
       prog_vecs <- list()
       for(r in 1:prog_num) {
         temp_vec <- vector(mode = 'numeric', length = 0)
         for(c in 1:tag_num) {
-          if(programs_df[r,c] != 0) {
-            temp_vec <- append(temp_vec, programs_df[r,c])
+          if(new_programs_df[r,c] != 0) {
+            temp_vec <- append(temp_vec, new_programs_df[r,c])
           }
         }
-        prog_vecs[[r]] <- temp_vec              # Adds vector to list
+        prog_vecs[[r]] <- temp_vec               # Adds vector to list
       }
-        
-      # Create New Data Frame Containing Jaccard Similarity for Any 2 Programs
+      
+      rec2_progress$inc(0.25)                    # Progress Bar - 50%
+      
+      # Create new data frame containing jaccard similarity for any 2 programs
       prog_sim <- matrix(NA, nrow = prog_num, ncol = prog_num)
       rownames(prog_sim) <- program_names
       for(r in 1:prog_num) {
@@ -478,28 +457,24 @@ server <- function(input, output, session) {
         }
       }
       
-      rec2_progress$inc(0.25) # Increment progress bar
+      rec2_progress$inc(0.25)                    # Progress Bar - 75%
       
       prog_sim <- as.data.frame(prog_sim[,prog_index])
-      
-      # Organize Final Similarities
+      print(prog_sim)
+      # Organize final similarities
       final_sim <- as.data.frame(matrix(NA, nrow = nrow(prog_sim), ncol = 2, dimnames = list(program_names,c('Score','Description'))))
       
       for(i in 1:nrow(prog_sim)) {
         final_sim[i,1] <- prog_sim[i,1]
       }
-      print(final_sim)
+
       final_sim <- final_sim[order(final_sim[,prog_index], decreasing = TRUE),]
       final_sim <- final_sim[-1,]
       final_sim <- head(final_sim, n = 10) # display only top 10 programs
       
       final_rows <- rownames(final_sim)
       
-      # Get Descriptions
-      gs_prog <- gs_title("Co-Curriculars")
-      prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
-      
-      rec2_progress$inc(0.25)
+      # Get descriptions
       
       for(i in 1:nrow(final_sim)) {
         prog_name <- rownames(final_sim)[i]
@@ -510,13 +485,16 @@ server <- function(input, output, session) {
       final_sim <- as.data.frame(final_sim[,-1])
       row.names(final_sim) <- final_rows
       
-      # Render Output Table
+      rec2_progress$inc(0.25)                    # Progress Bar - 100%
+      
+      # Render output table
       output$table2 <- renderTable (final_sim,
-        rownames = TRUE,
-        colnames = FALSE
+                                    rownames = TRUE,
+                                    colnames = FALSE
       )
     }
   )
+  
 }
 
 shinyServer(server)

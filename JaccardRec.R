@@ -49,3 +49,29 @@ for(r in 1:prog_num) {
     prog_sim[r,c] <- jaccard(prog_vecs[[r]], prog_vecs[[c]])
   }
 }
+
+prog_index <- 1
+prog_sim <- as.data.frame(prog_sim[,prog_index])
+
+# Organize Final Similarities
+final_sim <- as.data.frame(matrix(NA, nrow = nrow(prog_sim), ncol = 2, dimnames = list(program_names,c('Score','Description'))))
+
+for(i in 1:nrow(prog_sim)) {
+  final_sim[i,1] <- prog_sim[i,1]
+}
+
+final_sim <- final_sim[order(final_sim[,prog_index], decreasing = TRUE),]
+final_sim <- final_sim[-1,]
+final_sim <- head(final_sim, n = 10) # display only top 10 programs
+
+final_rows <- rownames(final_sim)
+
+# Get Descriptions
+gs_prog <- gs_title("Co-Curriculars")
+prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
+
+for(i in 1:nrow(final_sim)) {
+  prog_name <- rownames(final_sim)[i]
+  index <- which(prog_list$CoCurriculars %in% prog_name)
+  final_sim[i,2] <- prog_list[index,3]
+}
