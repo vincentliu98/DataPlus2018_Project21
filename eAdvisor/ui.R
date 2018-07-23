@@ -19,6 +19,7 @@ names(prog_choice) <- prog_list$CoCurriculars
 # Pop-up Messages
 js_thanks <- 'Shiny.addCustomMessageHandler("thanks", function(message) {alert(message);});'
 js_check <- 'Shiny.addCustomMessageHandler("check", function(message) {alert(message);});'
+js_exists <- 'Shiny.addCustomMessageHandler("exists", function(message) {alert(message);});'
 js_record <- 'Shiny.addCustomMessageHandler("noRecord", function(message) {alert(message);});'
 
 header <-  
@@ -56,6 +57,9 @@ body <-
               p("If you would like to help us improve our system, please fill out the User Profile
                 below or add your organization to our database. If you would like to learn more about our 
                 project or provide feedback, please visit the \"About Us\" tab"),
+              tags$head(tags$script(HTML(js_thanks))),
+              tags$head(tags$script(HTML(js_check))),
+              tags$head(tags$script(HTML(js_exists))),
               useShinyjs(),
               div(
                 box(title = "User Profile", status = "primary", width = 12,
@@ -105,6 +109,7 @@ body <-
                 you begin by using the Find Similar Co-Curriculars Widget."),
 
               # Hybrid Recommender Widget
+              tags$head(tags$script(HTML(js_record))),
               useShinyjs(),
               div(
                 box(title = "Co-Curricular Recommender", status = "primary",

@@ -1,15 +1,21 @@
 # DataPlus2018_Project21: Co-Curricular Pathways (E-Advisor)
 
-## Creation of R Shiny App
-app.R --> main R script that simply creates and runs the shiny app
-  - uses ui.R and server.R as sources for final Shiny App
+## Final R Shiny App --> eAdvisor Folder
+### https://brookezkeene.shinyapps.io/eAdvisor
+ui.R --> user interface of final Shiny app
 
-ui.R --> user interface R script that handles front-end appearance of Shiny app
-  - uses Shiny dashboard package to manage tabs and widgets
+server.R --> data analysis and management for final Shiny app
 
-server.R --> server R script that handles back end data management of Shiny app
-  - user profile data saved into a new row of a google sheet
-  - content based and jaccard recommender widget housed here
+## Initial Testing of R Shiny App
+app.R --> R script that simply creates and runs the shiny app
+  - testing ui.R and server.R as sources for Shiny App
+
+ui.R --> user interface R script that handles front-end appearance
+  - testing Shiny dashboard package and the use of tabs and widgets
+
+server.R --> server R script that handles back-end data management
+  - testing saving and receiving data from google sheets
+  - testing hybrid and jaccard recommender widgets
 
 ## Recommendation System
 ContentBasedRec.R --> our initial content-based recommender

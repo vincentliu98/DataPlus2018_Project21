@@ -290,6 +290,21 @@ server <- function(input, output, session) {
         session$sendCustomMessage("check", "Please fill out your information for all fields!")
         return()
       }
+      # Check if user already has a profile
+      ids <- id_data[c(1)]
+      id_row <- which(ids==input$netid, arr.ind = TRUE)
+      if(length(id_row) != 0) {
+        session$sendCustomMessage("exists", "It appears that you are already in our system.")
+        # Clear input cells
+        reset("netid")
+        reset("major")
+        reset("year")
+        reset("yr1prog")
+        reset("yr2prog")
+        reset("yr3prog")
+        reset("yr4prog")
+        return()
+      }
       
       prof_progress$inc(0.25)                    # Progress Bar - 25%
       Sys.sleep(0.1)
