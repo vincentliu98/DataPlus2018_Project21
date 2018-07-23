@@ -1,6 +1,4 @@
-# server.R --> server file for Shiny App
-
-#install.packages --> ?
+# Test server.R
 
 library(rsconnect)
 library(shiny)
@@ -488,7 +486,7 @@ server <- function(input, output, session) {
       for(i in 1:nrow(prog_sim)) {
         final_sim[i,1] <- prog_sim[i,1]
       }
-      print(final_sim)
+
       final_sim <- final_sim[order(final_sim[,prog_index], decreasing = TRUE),]
       final_sim <- final_sim[-1,]
       final_sim <- head(final_sim, n = 10) # display only top 10 programs

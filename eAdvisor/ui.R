@@ -19,14 +19,17 @@ names(prog_choice) <- prog_list$CoCurriculars
 # Pop-up Messages
 js_thanks <- 'Shiny.addCustomMessageHandler("thanks", function(message) {alert(message);});'
 js_check <- 'Shiny.addCustomMessageHandler("check", function(message) {alert(message);});'
+js_record <- 'Shiny.addCustomMessageHandler("noRecord", function(message) {alert(message);});'
 
 header <-  
   dashboardHeader(
-    title = "Duke Co-Curriculars"
+    title = "Duke University's Co-Curricular E-Advisor",
+    titleWidth = 400
   )
 
 sidebar <- 
   dashboardSidebar(
+    width = 400,
     sidebarMenuOutput("menu"),
     sidebarMenu(
       menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
@@ -43,6 +46,16 @@ body <-
       tabItem(tabName = "dashboard",                   
               h2("Dashboard"),
               h3("Welcome!"),
+              p("As we all know, Duke University can be a difficult environment to navigate, especially 
+                with its countless opportunities and resources. Therefore, we have compiled a list of over 
+                150 different co-curricular programs, although we hope to eventually  include all Duke activities. 
+                With the information we have gathered regarding these different organizations, we have deveoloped
+                various algorithms that will recommend certain co-curricular programs based on a student's
+                interests and previous participation. Feel free to explore our website and test out our
+                widgets."),
+              p("If you would like to help us improve our system, please fill out the User Profile
+                below or add your organization to our database. If you would like to learn more about our 
+                project or provide feedback, please visit the \"About Us\" tab"),
               useShinyjs(),
               div(
                 box(title = "User Profile", status = "primary", width = 12,
@@ -69,7 +82,7 @@ body <-
                            selectInput("yr3prog", label = h4("Programs - Year 3"),
                                        choices = prog_choice,
                                        multiple = TRUE),
-                           selectInput("yr4prog", label = h4("Programs - Year 4"),
+                           selectInput("yr4prog", label = h4("Programs - Year 4+"),
                                        choices = prog_choice,
                                        multiple = TRUE),
                            helpText("*Please select the programs that you have participated in during each year 
@@ -110,7 +123,7 @@ body <-
                     collapsed = TRUE
                     )
               ),
-              # Jaccard Similarity Recommender Widget --> change variable names?
+              # Jaccard Similarity Recommender Widget
               box(title = "Find Similar Co-Curriculars", status = "primary",
                   solidHeader = TRUE, width = 12, collapsible = TRUE,
                   column(width = 4,
@@ -147,8 +160,9 @@ body <-
                 " or feel free to contact us ."),
               h3("Contact Information"),
               p("Data+ Director: Paul Bendich"),
-              p("Project Team Manager: Lindsay Berry"),
-              p("Project Team Members: Alec Ashforth, Brooke Keene, Vincent Liu, Dezmanique Martin")
+              p("Project Manager: Lindsay Berry"),
+              p("Project Team Members: Alec Ashforth, Brooke Keene, Vincent Liu, Dezmanique Martin"),
+              p("Project Clients: Michael Faber, Evan Levine")
               )
       )
       )

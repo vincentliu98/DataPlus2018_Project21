@@ -275,7 +275,6 @@ collaborative_filter <- function(netID, progress)
 
 server <- function(input, output, session) {
   # Save User Profile
-  gs_eadvisor <- gs_key("1lnZaPj22rIo0WYfKNAWerEpRDuh4ByI9tZSVbtMT4iw")
   observeEvent(
     input$submit,
     {
@@ -334,6 +333,10 @@ server <- function(input, output, session) {
   observeEvent(
     input$recGo,
     {
+      # Load E-Advisor Database Googlesheet
+      gs_eadvisor <- gs_key("1lnZaPj22rIo0WYfKNAWerEpRDuh4ByI9tZSVbtMT4iw")
+      id_data <- gs_read_csv(gs_eadvisor, col_names = TRUE)
+      
       # Progress bar
       rec_progress <- shiny::Progress$new()
       on.exit(rec_progress$close())
@@ -460,7 +463,7 @@ server <- function(input, output, session) {
       rec2_progress$inc(0.25)                    # Progress Bar - 75%
       
       prog_sim <- as.data.frame(prog_sim[,prog_index])
-      print(prog_sim)
+      
       # Organize final similarities
       final_sim <- as.data.frame(matrix(NA, nrow = nrow(prog_sim), ncol = 2, dimnames = list(program_names,c('Score','Description'))))
       
@@ -468,7 +471,7 @@ server <- function(input, output, session) {
         final_sim[i,1] <- prog_sim[i,1]
       }
 
-      final_sim <- final_sim[order(final_sim[,prog_index], decreasing = TRUE),]
+      final_sim <- final_sim[order(final_sim[,1], decreasing = TRUE),]
       final_sim <- final_sim[-1,]
       final_sim <- head(final_sim, n = 10) # display only top 10 programs
       
@@ -480,6 +483,7 @@ server <- function(input, output, session) {
         prog_name <- rownames(final_sim)[i]
         index <- which(prog_list$CoCurriculars %in% prog_name)
         final_sim[i,2] <- prog_list[index,3]
+        print(prog_list[index,3])
       }
       
       final_sim <- as.data.frame(final_sim[,-1])

@@ -50,7 +50,7 @@ for(r in 1:prog_num) {
   }
 }
 
-prog_index <- 1
+prog_index <- 3
 prog_sim <- as.data.frame(prog_sim[,prog_index])
 
 # Organize Final Similarities
@@ -60,7 +60,7 @@ for(i in 1:nrow(prog_sim)) {
   final_sim[i,1] <- prog_sim[i,1]
 }
 
-final_sim <- final_sim[order(final_sim[,prog_index], decreasing = TRUE),]
+final_sim <- final_sim[order(final_sim[,1], decreasing = TRUE),]
 final_sim <- final_sim[-1,]
 final_sim <- head(final_sim, n = 10) # display only top 10 programs
 

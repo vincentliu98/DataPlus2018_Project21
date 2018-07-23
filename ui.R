@@ -1,6 +1,4 @@
-# ui.R --> ui file for Shiny App
-
-#install.packages --> ?
+# Test ui.R
 
 library(rsconnect)
 library(tidyverse)
