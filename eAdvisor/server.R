@@ -514,6 +514,19 @@ server <- function(input, output, session) {
     }
   )
   
+  ## Thumbs up/down
+  observeEvent(
+    input$up, {
+      print('hi')
+    }
+  )
+  
+  observeEvent(
+    input$down, {
+      print('bye')
+    }
+  )
+  
 }
 
 shinyServer(server)
