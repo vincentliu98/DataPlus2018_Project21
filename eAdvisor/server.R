@@ -5,7 +5,7 @@ library(tidyverse)
 library(tm)
 library(DT)
 
-# Load Data from Googlesheets
+## Load Data from Googlesheets
 # E-Advisor Database
 gs_eadvisor <- gs_key("1lnZaPj22rIo0WYfKNAWerEpRDuh4ByI9tZSVbtMT4iw")
 id_data <- gs_read_csv(gs_eadvisor, col_names = TRUE)
@@ -292,7 +292,7 @@ server <- function(input, output, session) {
       }
       # Check if user already has a profile
       ids <- id_data[c(1)]
-      id_row <- which(ids==input$netid, arr.ind = TRUE)
+      id_row <- which(ids==tolower(input$netid), arr.ind = TRUE)
       if(length(id_row) != 0) {
         session$sendCustomMessage("exists", "It appears that you are already in our system.")
         # Clear input cells
@@ -321,7 +321,7 @@ server <- function(input, output, session) {
       
       # Add row to google sheet
       gs_add_row(gs_eadvisor, 
-                 input = c(input$netid, majs, input$year, yr1, yr2, yr3, yr4))
+                 input = c(tolower(input$netid), majs, input$year, yr1, yr2, yr3, yr4))
       
       prof_progress$inc(0.25)                    # Progress Bar - 75%
       Sys.sleep(0.1)
@@ -359,7 +359,7 @@ server <- function(input, output, session) {
       rec_progress$set(message = "Loading Recommendations...", value = 0)
       
       # Run Functions and Store Prediction Data
-      netID = input$recID
+      netID = tolower(input$recID)
       
       content_scores <- content_filter(netID, rec_progress)
       # Check if netID exists in our system

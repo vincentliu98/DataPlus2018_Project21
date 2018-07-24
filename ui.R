@@ -138,23 +138,23 @@ body <-
                       actionButton("submit", "Submit")
                   )
                 )
-              )
-              #fluidRow(
+              ),
+              fluidRow(
               # Info Boxes - can use InputBoxOutput
-              #infoBox(title = "Co-Curriculars", 
-              #        value = 60, 
-              #        subtitle = "We represent 60 different co-curricular activities at Duke",
-              #        icon = icon("list-alt"),
-              #        color = "light-blue",
-              #        width = 4
-              #),
-              #infoBox(title = "Approval Rating", 
-              #        value = 100, 
-              #        icon = icon("thumbs-up"),
-              #        color = "green",
-              #        width = 4
-              #)
-              #)
+              infoBox(title = "Co-Curriculars", 
+                      value = 60, 
+                      subtitle = "We represent 60 different co-curricular activities at Duke",
+                      icon = icon("list-alt"),
+                      color = "light-blue",
+                      width = 4
+              ),
+              infoBox(title = "Approval Rating", 
+                      value = 100, 
+                      icon = icon("thumbs-up"),
+                      color = "green",
+                      width = 4
+              )
+              )
       ),
       tabItem(tabName = "favorites",
               h2("Favorites")),

@@ -1,16 +1,17 @@
 library(shiny)
 library(shinyjs)
 library(shinydashboard)
+library(shinydashboardPlus)
 library(googlesheets)
 
-# Access Data from Googlesheets
-# List of majors
+## Access Data from Googlesheets
+# Create list of majors
 gs_maj <- gs_key("1LqaHYZixDr4aMYq64wojMF5AYDVOsD83IWlX-ayDc0c")
 maj_list <- gs_read_csv(gs_maj, col_names = TRUE)
 maj_choice <- as.list(maj_list$Abbreviations)
 names(maj_choice) <- maj_list$Majors
 
-# List of activities
+# Create list of activities
 gs_prog <- gs_key("1HkqN1ISgHevSjYQw5XJlkAMQao61GMktFl9CO4PqMJY")
 prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
 prog_choice <- as.list(prog_list$Code)
@@ -24,19 +25,22 @@ js_record <- 'Shiny.addCustomMessageHandler("noRecord", function(message) {alert
 
 header <-  
   dashboardHeader(
-    title = "Duke University's Co-Curricular E-Advisor",
-    titleWidth = 400
+    title = "Duke Co-Curricular E-Advisor",
+    titleWidth = 300
   )
 
 sidebar <- 
   dashboardSidebar(
-    width = 400,
+    width = 300,
     sidebarMenuOutput("menu"),
     sidebarMenu(
       menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-      menuItem("Favorites", tabName = "favorites", icon= icon("star")),
-      menuItem("Widgets", tabName = "widgets", icon = icon("th"), 
+      #menuItem("Favorites", tabName = "favorites", icon= icon("star")),
+      menuItem("Co-Curricular Recommender", tabName = "hybrid", icon = icon("list"), 
                badgeLabel = "new", badgeColor = "green"),
+      menuItem("Find Similar Co-Curriculars", tabName = "jaccard", icon = icon("th"), 
+               badgeLabel = "new", badgeColor = "green"),
+      menuItem("Feedback", tabName = "feedback", icon = icon("comment")),
       menuItem("About Us", tabName = "about", icon = icon("address-card"))
     )
   )
@@ -98,17 +102,17 @@ body <-
                 )
               )
       ),
-      tabItem(tabName = "favorites",
-              h2("Favorites")),
-      tabItem(tabName = "widgets",
-              h2("Widgets"),
-              p("Discover new Duke co-curricular activities with the widgets below! 
+      tabItem(tabName = "hybrid",
+              h2("Co-Curricular Recommender"),
+              p("Discover new Duke co-curricular activities with the tool below! 
                 If you have already completed your user profile, you are able to use
-                our Co-Curricular Recommender. If you have participated in only one
-                or two co-curricular activities here at Duke, we would recommend that
-                you begin by using the Find Similar Co-Curriculars Widget."),
-
-              # Hybrid Recommender Widget
+                our Co-Curricular Recommender by simply entering your Duke netID and 
+                pressing 'Recommend!'."),
+              p("If you have participated in only one or two co-curricular activities 
+                here at Duke, we would recommend that you initially try the 
+                Find Similar Co-Curriculars tab."),
+              
+              ## Hybrid Recommender
               tags$head(tags$script(HTML(js_record))),
               useShinyjs(),
               div(
@@ -121,56 +125,101 @@ body <-
                                     below which you used to create your profile."),
                            textInput("recID", label = h3("Enter your NetID"), placeholder = "Ex. abc123"),
                            actionButton("recGo", "Recommend!")
-                           ),
+                    ),
                     column(width = 8,
                            tableOutput("table")
                     ),
-                    collapsed = TRUE
-                    )
-              ),
-              # Jaccard Similarity Recommender Widget
+                    collapsed = FALSE
+                )
+              )
+      ),
+      tabItem(tabName = "jaccard",
+              h2("Find Similar Co-Curriculars"),
+              p("With this tool, you can discover Duke co-curricular activities that 
+                are similar to each other! Just select the activity that you are interested
+                in from the drop down menu and press 'Recommend!'."),
+              p("If you have already completed your user profile, you are also able to use
+                our Co-Curricular Recommender."),
+              
+              ## Jaccard Similarity Recommender
               box(title = "Find Similar Co-Curriculars", status = "primary",
                   solidHeader = TRUE, width = 12, collapsible = TRUE,
                   column(width = 4,
                          helpText("Enter the co-curricular program for which you would like to
                                   see similar activities."),
                          selectInput("recProg", label = h3("Enter a Program"),
-                                     choices = prog_choice),
+                                     choices = prog_choice[-1]),
                          actionButton("recGo2", "Recommend!")
-                         ),
+                  ),
                   column(width = 8,
                          tableOutput("table2")
                   ),
-                  collapsed = TRUE
+                  collapsed = FALSE
               )
-              ),
+      ),
+      tabItem(tabName = "feedback",
+              h2("Feedback"),
+              p("Please let us know what you thought of our website! We are currently in the Beta-testing
+                stages and would appreciate any and all feedback. If you believe we are missing a 
+                co-curricular program or activity, please fill out the box below. If you would like to
+                help us by providing more information about an activity, please fill out the following
+                survey."),
+              p("Also, please indicate whether you like or dislike our website using the thumbs up and down
+                voting method below! Thank you!"),
+              textInput('feedback', "Suggest New Co-Curriculars"),
+              textAreaInput('comment', "Leave a Comment",
+                            width = '100%',
+                            height = '100%'),
+              fluidRow(
+                      actionButton("up", label = icon("thumbs-up"),
+                                   style = 'color: green;
+                                    position: relative;
+                                    left: 20px;
+                                    display:block;
+                                    height: 50px;
+                                    width: 50px;
+                                    border-radius: 50%;
+                                    border: 2px solid green;'),
+                       actionButton("down", label = icon("thumbs-down"),
+                                    style = 'color: red;
+                                    position: relative;
+                                    top: -50px;
+                                    left: 80px;
+                                    display:block;
+                                    height: 50px;
+                                    width: 50px;
+                                    border-radius: 50%;
+                                    border: 2px solid red;')
+              )
+      ),
       tabItem(tabName = "about",
               h2("About Us"),
               p("We are a team of Duke undergraduate students currently working on a", 
                 a("Data+", href = "https://bigdata.duke.edu/data"), "project in collaboration 
-                with Duke's Office of Information Technology (O.I.T.). Duke University is an 
-                exciting and ever-changing institution, but as Duke's massive co-curricular 
-                environment grows it can become more difficult for undergraduates to navigate 
-                this complicated academic and extracurricular landscape. Therefore, our 
-                goal is to create an 'e-advisor' tool that will help students determine
-                which co-curricular activities are well-suited for their interests. In
-                order to accomplish this, we hope to gather data that will allow us to
-                track a student's co-curricular 'pathway,' a map of the various 
-                activities the student was involved in during their time at Duke. With
-                this data, we plan to improve the current recommendation system running
+                with Duke's ",
+                a("Office of Information Technology", href = "https://oit.duke.edu/"),
+                "(O.I.T.). Duke University is an exciting and ever-changing institution, but as 
+                Duke's massive co-curricular environment grows it can become more difficult for 
+                undergraduates to navigate this complicated academic and extracurricular landscape. Therefore, 
+                our goal is to create an 'e-advisor' tool that will help students determine which 
+                co-curricular activities are well-suited for their interests. In order to accomplish 
+                this, we hope to gather data that will allow us to track a student's co-curricular 
+                'pathway,' a map of the various activities the student was involved in during their 
+                time at Duke. With this data, we plan to improve the current recommendation system running
                 behind this initial version of our 'e-advisor.'"),
               p("Thank you for helping us with this task! 
                 If you have any questions, please visit our ", 
                 a("website", href = "https://bigdata.duke.edu/projects/co-curricular-technology-pathways-e-advisor"), 
-                " or feel free to contact us ."),
+                " or feel free to contact us at ", 
+                a("eadvisordukeoit@gmail.com", href = "mailto:eadvisordukeoit@gmail.com"), "."),
               h3("Contact Information"),
               p("Data+ Director: Paul Bendich"),
               p("Project Manager: Lindsay Berry"),
               p("Project Team Members: Alec Ashforth, Brooke Keene, Vincent Liu, Dezmanique Martin"),
               p("Project Clients: Michael Faber, Evan Levine")
-              )
       )
-      )
+    )
+  )
 
 ui <- dashboardPage(header, sidebar, body)
 
