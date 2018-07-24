@@ -23,15 +23,15 @@
 
 ## Tagwords Search etc. in Python &rarr; Tagwords Python Code Folder
 
-**DukeGroups_ScrapeDescriptions.ipynb**
-* Gather links of organizations in a list, then enter each link and collect all the descriptions in a list
-* Perhaps one day should scrape the Full Roster. However, the member information is not accurate
+**DukeGroups_ScrapeDescriptions.ipynb**: 
+* Gather links of organizations in a list, then enter each link and collect all the descriptions in a list.
+* Perhaps one day should scrape the Full Roster. However, the member information is not accurate.
 
-**DukeGroups_SearchTagwords.ipynb** &rarr; Takes advantage of DukeGroups' search bar. Input all the tagwords manually we came up, and collect all co-curricular names shown in the search results. Create a dictionary whose keys are the co-curricular activity names, and whose values are 0 or 1 indicating if this co-curricular activity contains a specific tag
+**DukeGroups_SearchTagwords.ipynb** &rarr; Takes advantage of DukeGroups' search bar. Input all the tagwords manually we came up, and collect all co-curricular names shown in the search results. Create a dictionary whose keys are the co-curricular activity names, and whose values are 0 or 1 indicating if this co-curricular activity contains a specific tag.
 
-**Topic_Modeling.ipynb** &rarr; include multiple methods to extract keywords from text, such as RAKE, TextBlob, and LDA. More testings are needed to ensure accuracy
+**Topic_Modeling.ipynb** &rarr; include multiple methods to extract keywords from text, such as RAKE, TextBlob, and LDA. More testings are needed to ensure accuracy.
 
-**Processing_Tagwords.ipynb** &rarr; import Tag_Words.csv and read the tagwords inside it
+**Processing_Tagwords.ipynb** &rarr; import Tag_Words.csv and read the tagwords inside it.
 
 **Cluster_Groups.ipynb** &rarr; clusters student programs using PCA and K-Means
 
@@ -39,4 +39,4 @@
 
 **Generate_Students.ipynb** &rarr; simulate student profiles using Normal Distribution
 
-**Collavorative_Rec.ipynb** &rarr; use user-based collaborative filtering to give students recommendations
+**Collavorative_Rec.ipynb** &rarr; use user-based collaborative filtering to give students recommendations.
