@@ -53,14 +53,15 @@ body <-
               h3("Welcome!"),
               p("As we all know, Duke University can be a difficult environment to navigate, especially 
                 with its countless opportunities and resources. Therefore, we have compiled a list of over 
-                150 different co-curricular programs, although we hope to eventually  include all Duke activities. 
-                With the information we have gathered regarding these different organizations, we have deveoloped
+                150 different co-curricular programs, although we hope to eventually include all Duke activities. 
+                With the information we have gathered regarding these organizations, we have deveoloped
                 various algorithms that will recommend certain co-curricular programs based on a student's
-                interests and previous participation. Feel free to explore our website and test out our
-                widgets."),
+                interests and previous participation. Feel free to explore our website and test the tools
+                shown in the menu on the left"),
               p("If you would like to help us improve our system, please fill out the User Profile
-                below or add your organization to our database. If you would like to learn more about our 
-                project or provide feedback, please visit the \"About Us\" tab"),
+                below. Additionally, if you would like to add your organization to our database or provide
+                leave us a comment, please refer to our \"Feedback\" section. If you would like to learn more 
+                about our project, please visit the \"About Us\" section."),
               tags$head(tags$script(HTML(js_thanks))),
               tags$head(tags$script(HTML(js_check))),
               tags$head(tags$script(HTML(js_exists))),
@@ -106,11 +107,11 @@ body <-
               h2("Co-Curricular Recommender"),
               p("Discover new Duke co-curricular activities with the tool below! 
                 If you have already completed your user profile, you are able to use
-                our Co-Curricular Recommender by simply entering your Duke netID and 
-                pressing 'Recommend!'."),
+                our \"Co-Curricular Recommender\" by simply entering your Duke netID and 
+                pressing \"Recommend!\"."),
               p("If you have participated in only one or two co-curricular activities 
                 here at Duke, we would recommend that you initially try the 
-                Find Similar Co-Curriculars tab."),
+                \"Find Similar Co-Curriculars\" tab."),
               
               ## Hybrid Recommender
               tags$head(tags$script(HTML(js_record))),
@@ -137,7 +138,7 @@ body <-
               h2("Find Similar Co-Curriculars"),
               p("With this tool, you can discover Duke co-curricular activities that 
                 are similar to each other! Just select the activity that you are interested
-                in from the drop down menu and press 'Recommend!'."),
+                in from the drop down menu and press \"Recommend!\"."),
               p("If you have already completed your user profile, you are also able to use
                 our Co-Curricular Recommender."),
               
@@ -159,17 +160,18 @@ body <-
       ),
       tabItem(tabName = "feedback",
               h2("Feedback"),
-              p("Please let us know what you thought of our website! We are currently in the Beta-testing
-                stages and would appreciate any and all feedback. If you believe we are missing a 
+              p("Please let us know what you thought of our website! We are currently in the testing stage 
+                of this project and would appreciate any and all feedback. If you believe we are missing a 
                 co-curricular program or activity, please fill out the box below. If you would like to
-                help us by providing more information about an activity, please fill out the following
-                survey."),
+                help us by providing more information about an activity, please fill out the following",
+                a(" survey", href = "https://goo.gl/forms/BB34EWQfGJofHkyo1"), "."),
               p("Also, please indicate whether you like or dislike our website using the thumbs up and down
                 voting method below! Thank you!"),
-              textInput('feedback', "Suggest New Co-Curriculars"),
+              textInput('newCo', "Suggest a New Co-Curricular", width = '400px'),
               textAreaInput('comment', "Leave a Comment",
-                            width = '100%',
-                            height = '100%'),
+                            width = '400px',
+                            height = '250px',
+                            resize = "both"),
               fluidRow(
                       actionButton("up", label = icon("thumbs-up"),
                                    style = 'color: green;
