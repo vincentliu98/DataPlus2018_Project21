@@ -9,7 +9,7 @@
 * saves and receives data from google sheets
 * hybrid and jaccard recommender tools
 
-## Recommendation System
+## Recommendation System Algorithms &rarr; Recommendation Algorithms Folder
 **ContentBasedRec.R** &rarr; our initial content-based recommender
 
 **CollaborativeRec.R** &rarr; our initial collaborative filtering recommender
@@ -21,7 +21,7 @@
 
 **RecSim.R** &rarr; R script to run and test our recommendation system
 
-## Tagwords Search etc. in Python
+## Tagwords Search etc. in Python &rarr; Tagwords Python Code Folder
 
 **DukeGroups_ScrapeDescriptions.ipynb**: 
 * Gather links of organizations in a list, then enter each link and collect all the descriptions in a list.
