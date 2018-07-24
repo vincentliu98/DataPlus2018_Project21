@@ -2,20 +2,12 @@
 
 ## Final R Shiny App &rarr; eAdvisor Folder
 ### https://brookezkeene.shinyapps.io/eAdvisor
-**ui.R** &rarr; user interface of final Shiny app
+**ui.R** &rarr; user interface R script that handles front-end
+* uses shinydashboard package to create layout of website
 
-**server.R** &rarr; data analysis and management for final Shiny app
-
-## Initial Testing of R Shiny App
-**app.R** &rarr; R script that simply creates and runs the shiny app
-* testing ui.R and server.R as sources for Shiny App
-
-**ui.R** &rarr; user interface R script that handles front-end appearance
-* testing Shiny dashboard package and the use of tabs and widgets
-
-**server.R** &rarr; server R script that handles back-end data management
-* testing saving and receiving data from google sheets
-* testing hybrid and jaccard recommender widgets
+**server.R** &rarr; server R script that handles back-end data management and operations
+* saves and receives data from google sheets
+* hybrid and jaccard recommender tools
 
 ## Recommendation System
 **ContentBasedRec.R** &rarr; our initial content-based recommender

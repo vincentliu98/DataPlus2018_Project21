@@ -5,8 +5,8 @@ account: brookezkeene
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 385011
-bundleId: 1495871
+bundleId: 1497198
 url: https://brookezkeene.shinyapps.io/eAdvisor/
-when: 1532377549.16123
+when: 1532442002.98497
 asMultiple: FALSE
 asStatic: FALSE
