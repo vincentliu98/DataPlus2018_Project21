@@ -45,6 +45,8 @@ sidebar <-
                badgeLabel = "new", badgeColor = "green"),
       menuItem("Statistics", tabName = "stats", icon = icon("table"), 
                badgeLabel = "new", badgeColor = "green"),
+      menuItem("Pathways", tabName = "pathways", icon = icon("location-arrow"), 
+               badgeLabel = "come out soon", badgeColor = "yellow"),
       menuItem("Feedback", tabName = "feedback", icon = icon("comment")),
       menuItem("About Us", tabName = "about", icon = icon("address-card"))
     )

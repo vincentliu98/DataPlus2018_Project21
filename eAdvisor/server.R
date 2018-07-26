@@ -321,17 +321,20 @@ sameMajorPop <- function(major){
 Admit2015 <- getAdmit('2015')
 Admit2016 <- getAdmit('2016')
 Admit2017 <- getAdmit('2017')
+#Admit2018 <- getAdmit('2018')
 
 # Create dataframes of num of activities
 allCounts2015 <- countActs(Admit2015)
 allCounts2016 <- countActs(Admit2016)
 allCounts2017 <- countActs(Admit2017)
+#allCounts2018 <- countActs(Admit2018)
 allCountsAll <- countActs(id_data)
 
 # make new dataframes from allCounts****
 allNum2015 <- all_num(allCounts2015)
 allNum2016 <- all_num(allCounts2016)
 allNum2017 <- all_num(allCounts2017)
+#allNum2018 <- all_num(allCounts2018)
 allNumAll <- all_num(allCountsAll)
 
 # all_numAll <- function(){
@@ -345,21 +348,9 @@ allNumAll <- all_num(allCountsAll)
 allPop2015 <- popActs(Admit2015)
 allPop2016 <- popActs(Admit2016)
 allPop2017 <- popActs(Admit2017)
+#allPop2018 <- popActs(Admit2018)
 allPopAll <- popActs(id_data)
-# Rename dataframes to match with input
-# rename_year(allCounts2015)
-# rename_year(allCounts2016)
-# rename_year(allCounts2017)
 
-# Add the x axis, number of activities
-# cbind(num = 1:52, allCounts2015)
-# cbind(num = 0, allCounts2016)
-# cbind(num = 0, allCounts2017)
-
-# To-do: Create a df to get all the program names of id_data and then rank by popularity----------------
-# convert the code to program names
-
-# To-do: use info boxes for stats page-------
 # Content-Based Filtering--------------------------------
 content_filter <- function(netID, progress)
 {
@@ -633,6 +624,7 @@ server <- function(input, output, session) {
            "2019" = allNum2015,
            "2020" = allNum2016,
            "2021" = allNum2017,
+           #"2022" = allNum2018,
            "All" = allNumAll)
       })
   
@@ -641,6 +633,7 @@ server <- function(input, output, session) {
          "2019" = allPop2015,
          "2020" = allPop2016,
          "2021" = allPop2017,
+         #"2022" = allPop2018,
          "All" = allPopAll
          )
   })
