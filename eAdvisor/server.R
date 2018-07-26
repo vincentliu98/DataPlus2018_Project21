@@ -365,6 +365,10 @@ content_filter <- function(netID, progress)
 {
   # Access a Student's Co-Curriculars with their NetID
   # Find row of given netID
+  # Reload the database (now the database is updated)
+  gs_eadvisor <- gs_key("1lnZaPj22rIo0WYfKNAWerEpRDuh4ByI9tZSVbtMT4iw")
+  id_data <- gs_read_csv(gs_eadvisor, col_names = TRUE)
+  
   ids <- id_data[c(1)]
   id_row <- which(ids==netID, arr.ind = TRUE)
   if(length(id_row) == 0) {
@@ -469,6 +473,10 @@ content_filter <- function(netID, progress)
 # Collaborative Filtering-------------------------------------
 collaborative_filter <- function(netID, progress)
 {
+  # Reload the database (now the database is updated)
+  gs_eadvisor <- gs_key("1lnZaPj22rIo0WYfKNAWerEpRDuh4ByI9tZSVbtMT4iw")
+  id_data <- gs_read_csv(gs_eadvisor, col_names = TRUE)
+  
   ## Function to Calculate Cosine Similarity -- Item vs. Item
   getCosine <- function(x,y) 
   {
@@ -642,12 +650,14 @@ server <- function(input, output, session) {
     # Render a barplot
     ggplot(data=datasetInput1(), aes(x=num_act, y=get(input$grade))) +
       geom_bar(stat="identity",fill="steelblue") + 
+      ggtitle("Student Participation in Programs") +
       xlab('Number of Activities') + 
       ylab("Number of Students") +
       theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5)) + 
       geom_text(aes(label=get(input$grade)), vjust=1.6, color="white", size=3.5)+
       scale_y_continuous(breaks= pretty_breaks())+
-      scale_x_continuous(breaks= pretty_breaks())+
+      scale_x_continuous(breaks = c(0:6))+
       geom_vline(data=datasetInput1(), aes(xintercept=num_act%*%get(input$grade)/sum(get(input$grade))),color="red",
                  linetype="dashed")
     })
@@ -731,10 +741,6 @@ server <- function(input, output, session) {
   observeEvent(
     input$recGo,
     {
-      # Load E-Advisor Database Googlesheet
-      gs_eadvisor <- gs_key("1lnZaPj22rIo0WYfKNAWerEpRDuh4ByI9tZSVbtMT4iw")
-      id_data <- gs_read_csv(gs_eadvisor, col_names = TRUE)
-      
       # Progress bar
       rec_progress <- shiny::Progress$new()
       on.exit(rec_progress$close())

@@ -1,0 +1,12 @@
+name: eadvisor
+title:
+username:
+account: vincentjliu
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 388834
+bundleId: 1502404
+url: https://vincentjliu.shinyapps.io/eadvisor/
+when: 1532635539.92958
+asMultiple: FALSE
+asStatic: FALSE
