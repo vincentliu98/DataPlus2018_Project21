@@ -745,7 +745,7 @@ server <- function(input, output, session) {
       
       rec_progress$inc(0.1)                      # Progress Bar - 90%
       
-      final_scores <- as.data.frame(matrix(NA, nrow = nrow(content_scores), ncol = 2, dimnames = list(rownames(content_scores),c('Score','Description'))))
+      final_scores <- as.data.frame(matrix(NA, nrow = nrow(content_scores), ncol = 3, dimnames = list(rownames(content_scores),c('Score','Description','Link'))))
       
       # Calculate weights of recommendation systems
       content_percentage = 0.75
@@ -753,30 +753,30 @@ server <- function(input, output, session) {
       for(i in 1:nrow(content_scores)) {
         final_scores[i,1] <- (content_scores[i,1]*content_percentage) + (collaborative_scores[i,1]*collaborative_percentage)
       }
-      
+
       # Organize final scores
       final_scores <- final_scores[order(final_scores[,'Score'], decreasing = TRUE),]
       final_scores <- head(final_scores, n = 10)  # display only top 10 programs
-      
-      final_rows <- rownames(final_scores)
-      
+      final_scores <- tibble::rownames_to_column(final_scores)
+      colnames(final_scores)[1] <- "CoCurriculars"
+      print(final_scores)
       # Get descriptions
       
       for(i in 1:nrow(final_scores)){
-        prog_name <- rownames(final_scores)[i]
+        prog_name <- final_scores[i,1]
         index <- which(prog_list$CoCurriculars %in% prog_name)
-        final_scores[i,2] <- prog_list[index,3]
+        final_scores[i,3] <- prog_list[index,3]
+        final_scores[i,4] <- prog_list[index,4]
       }
-      
-      final_scores <- as.data.frame(final_scores[,-1])
-      row.names(final_scores) <- final_rows
-      
+
       rec_progress$inc(0.1)                      # Progress Bar - 100%
       
       # Render output table
-      output$table <- renderTable(final_scores,
-                                  rownames = TRUE,
-                                  colnames = FALSE)
+      final_scores$Link <- paste0("<a href='",final_scores$Link,"'>",final_scores$CoCurriculars,"</a>")
+      final_scores <- final_scores[,c(3,4)]
+      final_scores <- select(final_scores, CoCurriculars=Link, Description)
+      output$table <- DT::renderDataTable({final_scores},escape = FALSE,rownames = FALSE)
+      
     }
   )
   
@@ -850,7 +850,7 @@ server <- function(input, output, session) {
       prog_sim <- as.data.frame(prog_sim[,prog_index])
       
       # Organize final similarities
-      final_sim <- as.data.frame(matrix(NA, nrow = nrow(prog_sim), ncol = 2, dimnames = list(program_names,c('Score','Description'))))
+      final_sim <- as.data.frame(matrix(NA, nrow = nrow(prog_sim), ncol = 3, dimnames = list(program_names,c('Score','Description','Link'))))
       
       for(i in 1:nrow(prog_sim)) {
         final_sim[i,1] <- prog_sim[i,1]
@@ -858,29 +858,27 @@ server <- function(input, output, session) {
       
       final_sim <- final_sim[order(final_sim[,1], decreasing = TRUE),]
       final_sim <- final_sim[-1,]
-      final_sim <- head(final_sim, n = 10) # display only top 10 programs
+      #final_sim <- head(final_sim, n = 10) # display only top 10 programs
+      final_sim <- tibble::rownames_to_column(final_sim)
+      colnames(final_sim)[1] <- "CoCurriculars"
       
-      final_rows <- rownames(final_sim)
-      
-      # Get descriptions
+      # Get descriptions and links
       
       for(i in 1:nrow(final_sim)) {
-        prog_name <- rownames(final_sim)[i]
+        prog_name <- final_sim[i,1]
         index <- which(prog_list$CoCurriculars %in% prog_name)
-        final_sim[i,2] <- prog_list[index,3]
-        print(prog_list[index,3])
+        final_sim[i,3] <- prog_list[index,3]
+        final_sim[i,4] <- prog_list[index,4]
       }
-      
-      final_sim <- as.data.frame(final_sim[,-1])
-      row.names(final_sim) <- final_rows
       
       rec2_progress$inc(0.25)                    # Progress Bar - 100%
       
       # Render output table
-      output$table2 <- renderTable (final_sim,
-                                    rownames = TRUE,
-                                    colnames = FALSE
-      )
+      final_sim$Link <- paste0("<a href='",final_sim$Link,"'>",final_sim$CoCurriculars,"</a>")
+      final_sim <- final_sim[,c(3,4)]
+      final_sim <- select(final_sim, CoCurriculars=Link, Description)
+      output$table2 <- 
+        DT::renderDataTable({final_sim},escape=FALSE, rownames= FALSE)
     }
   )
   ## Thumbs up/down
