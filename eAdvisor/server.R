@@ -21,15 +21,15 @@ prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
 gs_tags <- gs_key("1Zs8ELNUlX5A1pYOkyrJ38nvK2ZSl_vuh7DAdWhnQ30k")
 programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
 
-# Functions for data wrangling-----------------------------------------
-# getAdmit <- function(stringYear)===Create separate dataframes for id_data from each year
+# functions for data wrangling BELOW-----------------------------------------
+# Function: getAdmit <- function(stringYear)===Create separate dataframes for id_data from each year----
   # input: '2017'
   # output: separate dataframe for students admitted that year
 getAdmit <- function(stringYear){
   return(id_data[id_data['Admit Year'] == stringYear, ])
 }
 
-# countActs <- function(getAdmit)---Create a function to create a dataframe of num of activities
+# Function: countActs <- function(getAdmit)---Create a function to create a dataframe of num of activities----
   # input: Admit + year
   # output: num activities VS grade
 countActs <- function(AdmitYear){
@@ -111,13 +111,11 @@ countActs <- function(AdmitYear){
     # count the num of activities
     counts4[stud] <- count;
   }
-  
-  
   allCounts = do.call(rbind, Map(data.frame, Year1=counts1, Year2=counts2,Year3=counts3,Year4=counts4))
   return(allCounts);
 }
 
-# count_num_fresh <- function(x)---function to reorganize the data returned from countActs
+# Functions: count_num_*grade* <- function(x)---reorganize the data returned from countActs-----
 count_num_fresh <- function(x) {
   #a = as.data.frame(table(unlist(x[,1])))
   count = c(rep(0,7));
@@ -181,7 +179,7 @@ count_num_senior <- function(x) {
   return(count);
 }
 
-# all_num <- function(x)---Create dataframe for "# activities vs. # participants" plot
+# Function: all_num <- function(x)---Create dataframe for "# activities vs. # participants" plot----
 all_num <- function(countActs)
   return(data.frame("num_act" = 0:6, 
                     "fresh" = count_num_fresh(countActs), 
@@ -189,21 +187,14 @@ all_num <- function(countActs)
                     "junior" = count_num_junior(countActs), 
                     "senior" = count_num_senior(countActs)))
 
-# codeToName <- function(code)---Convert code to program name
+# Function: codeToName <- function(code)---Convert code to program name----
 codeToName <- function(code){
   # find the corresponding name of the code
   program_name = prog_list[prog_list$Code == code, ]$CoCurriculars;
   return(program_name);
 }
 
-# abbrToMajor <- function(abbr)---Convert abbreviations to full major name
-abbrToMajor <- function(abbr){
-  major = maj_list[maj_list$Abbreviations == abbr, ]$Majors;
-  return(major)
-}
-# popActs <- function(AdmitYear)
-# input: AdmitYear dataframe
-# ouput: popular activity dataframe by descending order
+# Function: popActs <- function(AdmitYear)---generate popular activity dataframe by descending order----
 popActs <- function(AdmitYear){
   if ( is.data.frame(AdmitYear) && nrow(AdmitYear)==0)
     return(data.frame(Activity=character(0),
@@ -296,7 +287,7 @@ popActs <- function(AdmitYear){
   return(popular);
 }
 
-# Find people with these major (full name), and rank their activities
+# Function: sameMajorPop <- function(major)---Find people with these major (full name), and rank their activities----
 sameMajorPop <- function(major){
   idx = c(); 
 # loop through each row
@@ -315,41 +306,37 @@ sameMajorPop <- function(major){
   return(popActs(people))
 }
 
+# Function(Unused): abbrToMajor <- function(abbr)---Convert abbreviations to full major name----
+abbrToMajor <- function(abbr){
+  major = maj_list[maj_list$Abbreviations == abbr, ]$Majors;
+  return(major)
+}
+# functions for data wrangling ABOVE-----------------------------------------
+# Create dataframes for plotting ---------------
+# allNum****
+  # make dataframes for students information
+getAllNum <- function(matricYear){
+  # Create separate dataframes for id_data from each year, 
+  # then Create dataframes of num of activities,
+  # then make new dataframes from previous dataframe to plot
+  return(all_num(countActs(getAdmit(matricYear))));
+}
 
-# Create some dataframes for plotting ---------------
-# Create separate dataframes for id_data from each year
-Admit2015 <- getAdmit('2015')
-Admit2016 <- getAdmit('2016')
-Admit2017 <- getAdmit('2017')
-#Admit2018 <- getAdmit('2018')
+getAllNumAll <- function(){
+  return(all_num(countActs(id_data)));
+}
 
-# Create dataframes of num of activities
-allCounts2015 <- countActs(Admit2015)
-allCounts2016 <- countActs(Admit2016)
-allCounts2017 <- countActs(Admit2017)
-#allCounts2018 <- countActs(Admit2018)
-allCountsAll <- countActs(id_data)
+# allPop****
+  # make dataframes for popular activities
+getAllPop <- function(matricYear){
+  # Create separate dataframes for id_data from each year, 
+  # then Create dataframes of num of activities' frequencies,
+  return(popActs(getAdmit(matricYear)));
+}
 
-# make new dataframes from allCounts****
-allNum2015 <- all_num(allCounts2015)
-allNum2016 <- all_num(allCounts2016)
-allNum2017 <- all_num(allCounts2017)
-#allNum2018 <- all_num(allCounts2018)
-allNumAll <- all_num(allCountsAll)
-
-# all_numAll <- function(){
-#   pp <- cbind(names=c(rownames(allNum2015), rownames(allNum2016),rownames(allNum2017)), 
-#               +             rbind.fill(list(allNum2015, allNum2016, allNum2017)))
-#   allNumAll <- ddply(pp, .(names), function(x) colSums(x[,-1], na.rm = TRUE))
-#   allNumAll$num_act <- 0:6
-# }  
-
-# make dataframes for popular activities
-allPop2015 <- popActs(Admit2015)
-allPop2016 <- popActs(Admit2016)
-allPop2017 <- popActs(Admit2017)
-#allPop2018 <- popActs(Admit2018)
-allPopAll <- popActs(id_data)
+getAllPopAll <- function(){
+  return(popActs(id_data));
+}
 
 # Content-Based Filtering--------------------------------
 content_filter <- function(netID, progress)
@@ -619,22 +606,23 @@ server <- function(input, output, session) {
   # Plot number of activites=====================
   
   # Plot number of activities categorized with admit year
-  datasetInput1 <- reactive( {
+  datasetInput1 <- reactive({
     switch(input$class,
-           "2019" = allNum2015,
-           "2020" = allNum2016,
-           "2021" = allNum2017,
-           #"2022" = allNum2018,
-           "All" = allNumAll)
+           "2019" = getAllNum("2019"),
+           "2020" = getAllNum("2020"),
+           "2021" = getAllNum("2021"),
+           # "2022" = getAllNum("2021"),
+           "All" = getAllNumAll()
+           )
       })
   
   datasetInput2 <- reactive({
     switch(input$classYear,
-         "2019" = allPop2015,
-         "2020" = allPop2016,
-         "2021" = allPop2017,
-         #"2022" = allPop2018,
-         "All" = allPopAll
+         "2019" = getAllPop("2019"),
+         "2020" = getAllPop("2020"),
+         "2021" = getAllPop("2021"),
+         # "2022" = getAllPop("2022"),
+         "All" = getAllPopAll()
          )
   })
   
