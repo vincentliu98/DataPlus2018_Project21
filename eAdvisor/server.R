@@ -122,7 +122,7 @@ countActs <- function(AdmitYear) {
     
     act = pull(AdmitYear[year][stud, 1])
     
-    #act = unlist(strsplit(act, ', '))
+    act = unlist(strsplit(act, ', '))
     act = as.numeric(act)
     # (code1, code2)
     for (n in act) {
@@ -382,7 +382,6 @@ popActs <- function(AdmitYear) {
   }
   
   ######## Note: Year 4 doesn't include comma yet-----------
-  # act = unlist(strsplit(act, ', ')) is commented out
   year = 'Year 4'
   acts4 = c()
   # ((name1, name2),(name3),...) 52 rows
@@ -391,7 +390,7 @@ popActs <- function(AdmitYear) {
     # convert string to int
     act = pull(AdmitYear[year][stud, 1])
     
-    #act = unlist(strsplit(act, ', '))
+    act = unlist(strsplit(act, ', '))
     act = as.numeric(act)
     # (code1, code2)
     # change the code to program names
@@ -788,7 +787,7 @@ server <- function(input, output, session) {
   resp <- GET('https://api.colab.duke.edu/identity/v1/', add_headers('Accept'= 'application/json', 'x-api-key'= 'duke-cocurricular-eadvisor', 'Authorization'= bear))
   content <- httr::content(resp, as="parsed", type="application/json", encoding="UTF-8")
   netid <- content$netid
-  
+  # grad <- substring(content$gradYear,1,4)
   # Plot number of activities categorized with admit year
   datasetInput1 <- reactive({
     switch(
@@ -993,7 +992,7 @@ server <- function(input, output, session) {
                  final_scores$Link <-
                    paste0("<a href='",
                           final_scores$Link,
-                          "'>",
+                          "', target=_blank>",
                           final_scores$CoCurriculars,
                           "</a>")
                  final_scores <- final_scores[, c(3, 4)]
