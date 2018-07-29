@@ -7,6 +7,7 @@ library(dplyr)
 library(ggplot2)
 library(scales)
 library(googlesheets)
+library(httr)
 library(tm)
 library(DT)
 
@@ -781,6 +782,13 @@ collaborative_filter <- function(netID, progress)
 server <- function(input, output, session) {
   # Plot number of activites=====================
   
+  params <- parseQueryString(isolate(getUrlHash()))
+  token <- params$'#access_token'
+  bear <- paste('Bearer', token)
+  resp <- GET('https://api.colab.duke.edu/identity/v1/', add_headers('Accept'= 'application/json', 'x-api-key'= 'duke-cocurricular-eadvisor', 'Authorization'= bear))
+  content <- httr::content(resp, as="parsed", type="application/json", encoding="UTF-8")
+  netid <- content$netid
+  
   # Plot number of activities categorized with admit year
   datasetInput1 <- reactive({
     switch(
@@ -853,9 +861,8 @@ server <- function(input, output, session) {
                  prof_progress$set(message = "Saving Profile...", value = 0)
                  
                  # Check if user filled all fields
-                 if (is.null(input$netid) ||
-                     is_empty(input$major) || is.null(input$year)
-                     ||
+                 if (is_empty(input$major) || 
+                     is.null(input$year)   ||
                      is_empty(input$yr1prog) ||
                      is_empty(input$yr2prog) ||
                      is_empty(input$yr3prog) ||
@@ -866,11 +873,10 @@ server <- function(input, output, session) {
                  # Check if user already has a profile
                  ids <- id_data[c(1)]
                  id_row <-
-                   which(ids == tolower(input$netid), arr.ind = TRUE)
+                   which(ids == netid, arr.ind = TRUE)
                  if (length(id_row) != 0) {
                    session$sendCustomMessage("exists", "It appears that you are already in our system.")
                    # Clear input cells
-                   reset("netid")
                    reset("major")
                    reset("year")
                    reset("yr1prog")
@@ -895,13 +901,12 @@ server <- function(input, output, session) {
                  
                  # Add row to google sheet
                  gs_add_row(gs_eadvisor,
-                            input = c(tolower(input$netid), majs, input$year, yr1, yr2, yr3, yr4))
+                            input = c(netid, majs, input$year, yr1, yr2, yr3, yr4))
                  
                  prof_progress$inc(0.25)                    # Progress Bar - 75%
                  Sys.sleep(0.1)
                  
                  # Clear input cells
-                 reset("netid")
                  reset("major")
                  reset("year")
                  reset("yr1prog")
@@ -918,17 +923,14 @@ server <- function(input, output, session) {
   
   ## Widget - Co-Curricular Recommender
   # Hybrid Recommender - Combination of ContentBasedRec.R and CollaborativeRec.R
-  observeEvent(input$recGo,
-               {
                  # Progress bar
+  observeEvent(input$recGo,
+               {       
                  rec_progress <- shiny::Progress$new()
                  on.exit(rec_progress$close())
-                 
                  rec_progress$set(message = "Loading Recommendations...", value = 0)
-                 
                  # Run Functions and Store Prediction Data
-                 netID = tolower(input$recID)
-                 
+                 netID = netid
                  content_scores <-
                    content_filter(netID, rec_progress)
                  # Check if netID exists in our system

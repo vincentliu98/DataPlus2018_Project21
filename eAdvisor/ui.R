@@ -123,27 +123,6 @@ body <-
               collapsible = TRUE,
               textOutput("check"),
               column(
-                width = 4,
-                textInput("netid", label = h4("*Net ID"), placeholder = "Ex. abc123"),
-                hr(),
-                helpText(
-                  "Please select up to 3 majors. If you are unsure, simply select \"Undeclared\"."
-                ),
-                selectInput(
-                  "major",
-                  label = h4("*Major(s)"),
-                  choices = maj_choice,
-                  multiple = TRUE
-                ),
-                hr(),
-                helpText("Please type the year in which you will graduate from Duke."),
-                selectInput(
-                  "year",
-                  label = h4("*Graduation Year"),
-                  choices = c("2019", "2020", "2021")
-                )
-              ),
-              column(
                 width = 8,
                 helpText(
                   HTML(
@@ -181,9 +160,45 @@ body <-
                   multiple = TRUE
                 )
               ),
-              br(),
-              div(actionButton("submit", "Submit"), style =
-                    "padding:10px 18px 12px; float:right")
+              column(
+                width = 4,
+                helpText(
+                  "Please select up to 3 majors. If you are unsure, simply select \"Undeclared\"."
+                ),
+                selectInput(
+                  "major",
+                  label = h4("*Major(s)"),
+                  choices = maj_choice,
+                  multiple = TRUE
+                ),
+                hr(),
+                helpText("Please type the year in which you will graduate from Duke."),
+                selectInput(
+                  "year",
+                  label = h4("*Graduation Year"),
+                  choices = c("2019", "2020", "2021")
+                ),              br(),br(),br(),
+                fluidRow(
+                  column(
+                  4,
+                  align = "center",
+                  offset = 4, actionButton(
+                    "submit",
+                    label = "Submit",
+                    style = 'color: #2874A6;
+                    position:relative;
+                    right:20px;
+                    font-size: 1.2em;
+                    bottom: 18px;
+                    display:block;
+                    height: 100px;
+                    width: 100px;
+                    border-radius: 50%;
+                    border: 1px solid #2874A6;'
+                  )
+                  )
+                  )
+              )
             )
           )
           )
@@ -193,46 +208,28 @@ body <-
         fluidPage(
           h2("Co-Curricular Recommender"),
           theme = shinytheme("cerulean"),
-          p(
-            "Discover new Duke co-curricular activities with the tool below!
-            If you have already completed your user profile, you are able to use
-            our \"Co-Curricular Recommender\" by simply entering your Duke netID and
-            pressing \"Recommend!\"."
-          ),
+          ## Hybrid Recommender
+          tags$head(tags$script(HTML(js_record))),
+          useShinyjs(),
+          p("If you have already completed your user profile, you are able to see
+             your recommendations below by simply clicking on the button."),
           p(
             "If you have participated in only one or two co-curricular activities
             here at Duke, we would recommend that you initially try the
             \"Find Similar Co-Curriculars\" tab."
           ),
-          
-          ## Hybrid Recommender
-          tags$head(tags$script(HTML(js_record))),
-          useShinyjs(),
+          fluidRow(column(
+            4,
+            align = "center",
+            offset = 4, actionButton("recGo", "Recommend !"))),
+          br(),
           div(
             box(
               status = "primary",
               solidHeader = FALSE,
               width = 12,
               collapsible = FALSE,
-              #column(width = 4,
-              # Include clarifying text
-              helpText(
-                "If you have already completed your user profile, you are ready
-                to receive recommendations! Please enter your Duke NetID
-                below which you used to create your profile."
-              ),
-              textInput(
-                "recID",
-                label = h4("Enter your NetID"),
-                placeholder = "Ex. abc123"
-              ),
-              div(actionButton("recGo", "Recommend!"), style =
-                    "padding:10px 18px 12px; float:right"),
-              #),
-              # column(width = 8,
-              DT::dataTableOutput("table"),
-              #),
-              collapsed = FALSE
+              DT::dataTableOutput("table")
               )
           )
       )
@@ -331,7 +328,9 @@ body <-
                    mainPanel(plotOutput("gradePlot")))
         )
       ),
-      tabItem(tabName = "pathways", fluidPage(h2("Student Pathways"))),
+      tabItem(tabName = "pathways", 
+              fluidPage(
+                h2("Student Pathways"))),
       tabItem(
         tabName = "feedback",
         fluidPage(

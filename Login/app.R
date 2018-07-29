@@ -40,10 +40,12 @@ ui = fluidPage(style= "background-image:url(back.jpg);",
                    "login",
                    "Login",
                    icon("paper-plane"),
-                   onclick = "window.location.replace('https://oauth.oit.duke.edu/oauth/authorize.php?client_id=duke-cocurricular-eadvisor&client_secret=bY!NsopBG9GY$SM89P8HYaVNmtA$=wtlhP$l1KJUoyrJ*hRzke&redirect_uri=https%3A%2F%2Feadvisorduke.shinyapps.io%2Feadvisor%2F&response_type=token&state=1998&scope=basic')",
-                   style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; margin:auto;text-align:center;opacity:1;"
+                   onclick = "window.location.replace('https://oauth.oit.duke.edu/oauth/authorize.php?client_id=duke-cocurricular-eadvisor&client_secret=S%NLnToXhc6!vdzIUbtuf81rwGjXr*oJlC=Jli!=2Vk6ptDFdb&redirect_uri=https%3A%2F%2Feadvisorduke.shinyapps.io%2Feadvisor%2F&response_type=token&state=1998&scope=basic')",
+                 #  onclick = "window.location.replace('https://oauth.oit.duke.edu/oauth/authorize.php?client_id=duke-cocurricular-eadvisor&client_secret=S%NLnToXhc6!vdzIUbtuf81rwGjXr*oJlC=Jli!=2Vk6ptDFdb&redirect_uri=http%3A%2F%2Flocalhost%3A5577%2F&response_type=token&state=1998&scope=basic')",
+                 style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; margin:auto;text-align:center;opacity:1;"
                  )
-               )),
+               )
+               ),
                br(),
                br(),
                br(),
