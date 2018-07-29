@@ -31,6 +31,7 @@ js_record <-
   'Shiny.addCustomMessageHandler("noRecord", function(message) {alert(message);});'
 
 # UI-Header---------------------------------------------------
+
 header <-
   dashboardHeader(title = "Duke Co-Curricular E-Advisor",
                   titleWidth = 300)
@@ -113,7 +114,6 @@ body <-
           tags$head(tags$script(HTML(js_thanks))),
           tags$head(tags$script(HTML(js_check))),
           tags$head(tags$script(HTML(js_exists))),
-          useShinyjs(),
           div(
             box(
               title = div("Create User Profile", style = "color:white"),
@@ -210,11 +210,10 @@ body <-
           useShinyjs(),
           div(
             box(
-              title = div("Your Recommendations", style = "color:white"),
               status = "primary",
-              solidHeader = TRUE,
+              solidHeader = FALSE,
               width = 12,
-              collapsible = TRUE,
+              collapsible = FALSE,
               #column(width = 4,
               # Include clarifying text
               helpText(
@@ -224,7 +223,7 @@ body <-
               ),
               textInput(
                 "recID",
-                label = h5("Enter your NetID"),
+                label = h4("Enter your NetID"),
                 placeholder = "Ex. abc123"
               ),
               div(actionButton("recGo", "Recommend!"), style =
@@ -332,94 +331,95 @@ body <-
                    mainPanel(plotOutput("gradePlot")))
         )
       ),
-      tabItem(tabName = "pathway",
-              h2("Student Pathways")),
+      tabItem(tabName = "pathways", fluidPage(h2("Student Pathways"))),
       tabItem(
         tabName = "feedback",
-        h2("Feedback"),
-        p(
-          "Please let us know what you thought of our website! We are currently in the testing stage
-          of this project and would appreciate any and all feedback. If you believe we are missing a
-          co-curricular program or activity, please fill out the box below. If you would like to
-          help us by providing more information about an activity, please fill out the following",
-          a(" survey", href = "https://goo.gl/forms/BB34EWQfGJofHkyo1"),
-          "."
-        ),
-        p(
-          "Also, please indicate whether you like or dislike our website using the thumbs up and down
-          voting method below! Thank you!"
-        ),
-        textInput('newCo', "Suggest a New Co-Curricular", width = '400px'),
-        textAreaInput(
-          'comment',
-          "Leave a Comment",
-          width = '400px',
-          height = '250px',
-          resize = "both"
-        ),
-        fluidRow(
-          actionButton(
-            "up",
-            label = icon("thumbs-up"),
-            style = 'color: green;
-            position: relative;
-            left: 20px;
-            display:block;
-            height: 50px;
-            width: 50px;
-            border-radius: 50%;
-            border: 2px solid green;'
+        fluidPage(
+          titlePanel("Feedback"),
+          p(
+            "Please let us know what you thought of our website! We are currently in the testing stage
+            of this project and would appreciate any and all feedback. If you believe we are missing a
+            co-curricular program or activity, please fill out the box below. If you would like to
+            help us by providing more information about an activity, please fill out the following",
+            a(" survey", href = "https://goo.gl/forms/BB34EWQfGJofHkyo1"),
+            "."
           ),
-          actionButton(
-            "down",
-            label = icon("thumbs-down"),
-            style = 'color: red;
-            position: relative;
-            top: -50px;
-            left: 80px;
-            display:block;
-            height: 50px;
-            width: 50px;
-            border-radius: 50%;
-            border: 2px solid red;'
-          )
-          )
+          p(
+            "Also, please indicate whether you like or dislike our website using the thumbs up and down
+            voting method below! Thank you!"
           ),
-      tabItem(
-        tabName = "about",
-        h2("About Us"),
-        p(
-          "We are a team of Duke undergraduate students currently working on a",
-          a("Data+", href = "https://bigdata.duke.edu/data"),
-          "project in collaboration
-          with Duke's ",
-          a("Office of Information Technology", href = "https://oit.duke.edu/"),
-          "(O.I.T.). Duke University is an exciting and ever-changing institution, but as
-          Duke's massive co-curricular environment grows it can become more difficult for
-          undergraduates to navigate this complicated academic and extracurricular landscape. Therefore,
-          our goal is to create an 'e-advisor' tool that will help students determine which
-          co-curricular activities are well-suited for their interests. In order to accomplish
-          this, we hope to gather data that will allow us to track a student's co-curricular
-          'pathway,' a map of the various activities the student was involved in during their
-          time at Duke. With this data, we plan to improve the current recommendation system running
-          behind this initial version of our 'e-advisor.'"
-        ),
-        p(
-          "Thank you for helping us with this task!
-          If you have any questions, please visit our ",
-          a("website", href = "https://bigdata.duke.edu/projects/co-curricular-technology-pathways-e-advisor"),
-          " or feel free to contact us at ",
-          a("eadvisordukeoit@gmail.com", href = "mailto:eadvisordukeoit@gmail.com"),
-          "."
-        ),
-        h3("Contact Information"),
-        p("Data+ Director: Paul Bendich"),
-        p("Project Manager: Lindsay Berry"),
-        p(
-          "Project Team Members: Alec Ashforth, Brooke Keene, Vincent Liu, Dezmanique Martin"
-        ),
-        p("Project Clients: Michael Faber, Evan Levine")
-        )
+          textInput('newCo', "Suggest a New Co-Curricular", width = '400px'),
+          textAreaInput(
+            'comment',
+            "Leave a Comment",
+            width = '400px',
+            height = '250px',
+            resize = "both"
+          ),
+          fluidRow(
+            actionButton(
+              "up",
+              label = icon("thumbs-up"),
+              style = 'color: green;
+              position: relative;
+              left: 20px;
+              display:block;
+              height: 50px;
+              width: 50px;
+              border-radius: 50%;
+              border: 2px solid green;'
+            ),
+            actionButton(
+              "down",
+              label = icon("thumbs-down"),
+              style = 'color: red;
+              position: relative;
+              top: -50px;
+              left: 80px;
+              display:block;
+              height: 50px;
+              width: 50px;
+              border-radius: 50%;
+              border: 2px solid red;'
+            )
+            )
+            )
+            ),
+      tabItem(tabName = "about",
+              fluidPage(
+                titlePanel("About Us"),
+                p(
+                  "We are a team of Duke undergraduate students currently working on a",
+                  a("Data+", href = "https://bigdata.duke.edu/data"),
+                  "project in collaboration
+                  with Duke's ",
+                  a("Office of Information Technology", href = "https://oit.duke.edu/"),
+                  "(O.I.T.). Duke University is an exciting and ever-changing institution, but as
+                  Duke's massive co-curricular environment grows it can become more difficult for
+                  undergraduates to navigate this complicated academic and extracurricular landscape. Therefore,
+                  our goal is to create an 'e-advisor' tool that will help students determine which
+                  co-curricular activities are well-suited for their interests. In order to accomplish
+                  this, we hope to gather data that will allow us to track a student's co-curricular
+                  'pathway,' a map of the various activities the student was involved in during their
+                  time at Duke. With this data, we plan to improve the current recommendation system running
+                  behind this initial version of our 'e-advisor.'"
+                ),
+                p(
+                  "Thank you for helping us with this task!
+                  If you have any questions, please visit our ",
+                  a("website", href = "https://bigdata.duke.edu/projects/co-curricular-technology-pathways-e-advisor"),
+                  " or feel free to contact us at ",
+                  a("eadvisordukeoit@gmail.com", href = "mailto:eadvisordukeoit@gmail.com"),
+                  "."
+                ),
+                h3("Contact Information"),
+                p("Data+ Director: Paul Bendich"),
+                p("Project Manager: Lindsay Berry"),
+                p(
+                  "Project Team Members: Alec Ashforth, Brooke Keene, Vincent Liu, Dezmanique Martin"
+                ),
+                p("Project Clients: Michael Faber, Evan Levine")
+                ))
+            )
           )
-        )
 ui <- dashboardPage(header, sidebar, body)

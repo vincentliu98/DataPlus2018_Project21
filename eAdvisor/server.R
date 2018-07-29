@@ -22,12 +22,13 @@ prog_list <- gs_read_csv(gs_prog, col_names = TRUE)
 gs_tags <- gs_key("1Zs8ELNUlX5A1pYOkyrJ38nvK2ZSl_vuh7DAdWhnQ30k")
 programs_df <- data.frame(gs_read_csv(gs_tags, col_names = TRUE))
 
+
 # functions for data wrangling BELOW-----------------------------------------
 # Function: getAdmit <- function(stringYear)===Create separate dataframes for id_data from each year----
 # input: '2017'
 # output: separate dataframe for students admitted that year
 getAdmit <- function(stringYear) {
-  return(id_data[id_data['Admit Year'] == stringYear,])
+  return(id_data[id_data['Admit Year'] == stringYear, ])
 }
 
 # Function: countActs <- function(getAdmit)---Create a function to create a dataframe of num of activities----
@@ -293,7 +294,7 @@ all_num <- function(countActs)
 # Function: codeToName <- function(code)---Convert code to program name----
 codeToName <- function(code) {
   # find the corresponding name of the code
-  program_name = prog_list[prog_list$Code == code,]$CoCurriculars
+  program_name = prog_list[prog_list$Code == code, ]$CoCurriculars
   
   return(program_name)
   
@@ -406,7 +407,7 @@ popActs <- function(AdmitYear) {
   }
   popular = as.data.frame(table(c(acts1, acts2, acts3, acts4)), stringsAsFactors = FALSE)
   popular = select(popular, Frequency = Freq, Activity = Var1)
-  popular = popular[with(popular, order(-Frequency)), ]
+  popular = popular[with(popular, order(-Frequency)),]
   for (i in 1:nrow(popular)) {
     popular[i, 2] = codeToName(popular[i, 2])
   }
@@ -433,13 +434,13 @@ sameMajorPop <- function(major) {
       }
     }
   }
-  people = id_data[idx,]
+  people = id_data[idx, ]
   return(popActs(people))
 }
 
 # Function(Unused): abbrToMajor <- function(abbr)---Convert abbreviations to full major name----
 abbrToMajor <- function(abbr) {
-  major = maj_list[maj_list$Abbreviations == abbr,]$Majors
+  major = maj_list[maj_list$Abbreviations == abbr, ]$Majors
   
   return(major)
 }
@@ -494,7 +495,7 @@ content_filter <- function(netID, progress)
   }
   
   # Isolate co-curricular codes of given netID
-  id_progs <- id_data[id_row, ]
+  id_progs <- id_data[id_row,]
   id_progs <- id_progs[-c(1, 2, 3)]
   
   # Add all co-curricular codes to a vector, rec_progs
@@ -517,9 +518,9 @@ content_filter <- function(netID, progress)
   
   # Match codes to actual co-curricular names
   program_names = programs_df[c(1)]              # Column of Program Names
-  program_names <- program_names[-1, ]
+  program_names <- program_names[-1,]
   new_programs_df <-
-    programs_df[-1, -1]          # Remove NA row & program names
+    programs_df[-1,-1]          # Remove NA row & program names
   
   progs <- c()
   for (i in rec_progs) {
@@ -556,7 +557,7 @@ content_filter <- function(netID, progress)
                          nrow = ncol(students_df),
                          ncol = ncol(norm_prog))
   for (i in 1:ncol(students_df)) {
-    stud_profiles[i, ] = apply(norm_prog, 2, function(x) {
+    stud_profiles[i,] = apply(norm_prog, 2, function(x) {
       t(x) %*% students_df[, i]
     })
   }
@@ -573,7 +574,7 @@ content_filter <- function(netID, progress)
   rownames(stud_predictions) <- program_names
   for (c in 1:ncol(students_df)) {
     for (r in 1:nrow(new_programs_df)) {
-      stud_predictions[r, c] = sum(stud_profiles[c, ] * weighted_scores[r, ])
+      stud_predictions[r, c] = sum(stud_profiles[c,] * weighted_scores[r,])
     }
   }
   
@@ -582,8 +583,8 @@ content_filter <- function(netID, progress)
   # Change scores to ranks and delete programs already participated in
   participated <- c()
   for (i in 1:N) {
-    if (students_df[i, ] == 1) {
-      stud_predictions[i, ] <- -1
+    if (students_df[i,] == 1) {
+      stud_predictions[i,] <- -1
       participated <- append(participated, i)
     }
   }
@@ -627,7 +628,7 @@ collaborative_filter <- function(netID, progress)
   for (i in 1:nrow(id_data)) {
     pathways[i, 1] <- id_data[i, 1]
     
-    id_progs <- id_data[i, ]
+    id_progs <- id_data[i,]
     id_progs <- id_progs[-c(1, 2, 3)]
     
     temp_progs <- c()
@@ -714,7 +715,7 @@ collaborative_filter <- function(netID, progress)
         # get program's top N neighbors sorted by similarity
         topN <-
           ((head(n = 5, (
-            ids_programs.similarity[order(ids_programs.similarity[, prog], decreasing = TRUE), ][prog]
+            ids_programs.similarity[order(ids_programs.similarity[, prog], decreasing = TRUE),][prog]
           ))))
         topN_names <- as.character(rownames(topN))
         topN_similarities <- as.numeric(topN[, 1])
@@ -723,7 +724,7 @@ collaborative_filter <- function(netID, progress)
         topN_participation <-
           ids_programs[, c("student", topN_names)]
         topN_studPart <-
-          topN_participation[topN_participation$student == stud, ]
+          topN_participation[topN_participation$student == stud,]
         topN_studPart <-
           as.numeric(topN_studPart[!(names(topN_studPart) %in% c("student"))])
         
@@ -739,14 +740,14 @@ collaborative_filter <- function(netID, progress)
   
   # Find specific scores associated with netID provided
   stud_scores <-
-    ids_programs.scores[(which(rownames(ids_programs.scores) %in% netID)), ]
+    ids_programs.scores[(which(rownames(ids_programs.scores) %in% netID)),]
   stud_scores <- as.data.frame(stud_scores)
   
   # Convert program codes to indexes
   program_names = programs_df[c(1)]              # Column of Program Names
-  program_names <- program_names[-1, ]
+  program_names <- program_names[-1,]
   new_programs_df <-
-    programs_df[-1, -1]          # Remove column of program names
+    programs_df[-1,-1]          # Remove column of program names
   
   stud_predictions = as.data.frame(matrix(0, nrow = nrow(new_programs_df), ncol = 1))
   rownames(stud_predictions) <- program_names
@@ -763,7 +764,7 @@ collaborative_filter <- function(netID, progress)
   # Change Scores to Ranks and Delete Programs Already Participated in
   participated <- c()
   for (i in 1:nrow(stud_predictions)) {
-    if (stud_predictions[i, ] < 0) {
+    if (stud_predictions[i,] < 0) {
       participated <- append(participated, i)
     }
   }
@@ -857,13 +858,15 @@ server <- function(input, output, session) {
                      ||
                      is_empty(input$yr1prog) ||
                      is_empty(input$yr2prog) ||
-                     is_empty(input$yr3prog) || is_empty(input$yr4prog)) {
+                     is_empty(input$yr3prog) ||
+                     is_empty(input$yr4prog)) {
                    session$sendCustomMessage("check", "Please fill out your information for all fields!")
                    return()
                  }
                  # Check if user already has a profile
                  ids <- id_data[c(1)]
-                 id_row <- which(ids == tolower(input$netid), arr.ind = TRUE)
+                 id_row <-
+                   which(ids == tolower(input$netid), arr.ind = TRUE)
                  if (length(id_row) != 0) {
                    session$sendCustomMessage("exists", "It appears that you are already in our system.")
                    # Clear input cells
@@ -926,7 +929,8 @@ server <- function(input, output, session) {
                  # Run Functions and Store Prediction Data
                  netID = tolower(input$recID)
                  
-                 content_scores <- content_filter(netID, rec_progress)
+                 content_scores <-
+                   content_filter(netID, rec_progress)
                  # Check if netID exists in our system
                  if (is.null(content_scores)) {
                    reset("recID")
@@ -966,15 +970,17 @@ server <- function(input, output, session) {
                  
                  # Organize final scores
                  final_scores <-
-                   final_scores[order(final_scores[, 'Score'], decreasing = TRUE), ]
+                   final_scores[order(final_scores[, 'Score'], decreasing = TRUE),]
                  #final_scores <- head(final_scores, n = 10)  # display only top 10 programs
-                 final_scores <- tibble::rownames_to_column(final_scores)
+                 final_scores <-
+                   tibble::rownames_to_column(final_scores)
                  colnames(final_scores)[1] <- "CoCurriculars"
                  # Get descriptions
                  
                  for (i in 1:nrow(final_scores)) {
                    prog_name <- final_scores[i, 1]
-                   index <- which(prog_list$CoCurriculars %in% prog_name)
+                   index <-
+                     which(prog_list$CoCurriculars %in% prog_name)
                    final_scores[i, 3] <- prog_list[index, 3]
                    final_scores[i, 4] <- prog_list[index, 4]
                  }
@@ -1009,16 +1015,17 @@ server <- function(input, output, session) {
                  
                  # Match program code to actual co-curricular name
                  program_names = programs_df[c(1)]          # Column of Program Names
-                 program_names <- program_names[-1, ]
+                 program_names <- program_names[-1,]
                  new_programs_df <-
-                   programs_df[-1, -1]      # Remove column of program names
+                   programs_df[-1,-1]      # Remove column of program names
                  prog_num <-
                    nrow(new_programs_df)          # Number of total programs
                  tag_num <-
                    ncol(new_programs_df)           # Number of total tags
                  
                  # Find index of input program
-                 index <- which(prog_list$Code %in% strtoi(input$recProg))
+                 index <-
+                   which(prog_list$Code %in% strtoi(input$recProg))
                  name <- prog_list$CoCurriculars[index]
                  prog_index <- which(program_names %in% name)
                  
@@ -1058,7 +1065,8 @@ server <- function(input, output, session) {
                  rec2_progress$inc(0.25)                    # Progress Bar - 50%
                  
                  # Create new data frame containing jaccard similarity for any 2 programs
-                 prog_sim <- matrix(NA, nrow = prog_num, ncol = prog_num)
+                 prog_sim <-
+                   matrix(NA, nrow = prog_num, ncol = prog_num)
                  rownames(prog_sim) <- program_names
                  for (r in 1:prog_num) {
                    for (c in 1:prog_num) {
@@ -1084,8 +1092,8 @@ server <- function(input, output, session) {
                  }
                  
                  final_sim <-
-                   final_sim[order(final_sim[, 1], decreasing = TRUE), ]
-                 final_sim <- final_sim[-1, ]
+                   final_sim[order(final_sim[, 1], decreasing = TRUE),]
+                 final_sim <- final_sim[-1,]
                  #final_sim <- head(final_sim, n = 10) # display only top 10 programs
                  final_sim <- tibble::rownames_to_column(final_sim)
                  colnames(final_sim)[1] <- "CoCurriculars"
@@ -1094,7 +1102,8 @@ server <- function(input, output, session) {
                  
                  for (i in 1:nrow(final_sim)) {
                    prog_name <- final_sim[i, 1]
-                   index <- which(prog_list$CoCurriculars %in% prog_name)
+                   index <-
+                     which(prog_list$CoCurriculars %in% prog_name)
                    final_sim[i, 3] <- prog_list[index, 3]
                    final_sim[i, 4] <- prog_list[index, 4]
                  }
@@ -1126,14 +1135,6 @@ server <- function(input, output, session) {
   observeEvent(input$down, {
     print('bye')
   })
-  
-#   observeEvent(input$login, {
-#     # check if there is hash code
-#     # get the hash code
-#     
-#     
-#     print("clicked")
-#   })
 }
 
 shinyServer(server)
