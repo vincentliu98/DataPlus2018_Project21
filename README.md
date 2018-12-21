@@ -1,7 +1,7 @@
 # DataPlus2018_Project21: Co-Curricular Pathways (E-Advisor)
 
 ## Final R Shiny App &rarr; eAdvisor Folder
-### https://brookezkeene.shinyapps.io/eAdvisor
+### https://bigdata.duke.edu/projects/co-curricular-technology-pathways-e-advisor
 **ui.R** &rarr; user interface R script that handles front-end
 * uses shinydashboard package to create layout of website
 
